@@ -1,0 +1,11 @@
+# all
+/*
+
+# whitelist
+!/.git*
+!/src
+!/License
+!/Cargo.toml
+!/locales
+!/assets
+!/Readme*.md

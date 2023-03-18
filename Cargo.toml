@@ -1,0 +1,36 @@
+[package]
+name = "envpath"
+version = "0.0.1-alpha.1"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Moe <m@tmoe.me>"]
+readme = "Readme.md"
+description = """
+A library for parsing and deserialising paths with special rules.
+The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg"]`
+"""
+
+[features]
+# default = ["const-dirs", "base-dirs"]
+# default = ["const-dirs", "project-dirs"]
+# default = ["const-dirs", "base-dirs", "project-dirs"]
+default = ["const-dirs", "base-dirs", "project-dirs", "serde"]
+base-dirs = ["dep:dirs"]
+project-dirs = ["dep:directories"]
+const-dirs = []
+serde = ["dep:serde"]
+
+[dependencies]
+directories = { version = "4.0.1", optional = true }
+dirs = { version = "4.0.0", optional = true }
+serde = { version = "1.0.155", optional = true }
+
+[dev-dependencies]
+# anyhow = "1.0.69"
+ron = "0.8.0"
+serde = { version = "1.0.155", features = ["derive"] }
+
+
+[package.metadata.docs.rs]
+default-targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--document-private-items", "--no-deps"]
