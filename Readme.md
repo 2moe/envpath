@@ -42,13 +42,15 @@ data = "/Users/[username]/Library/Application Support/x.y.z"
 This is a good approach, but is there a more universal method?
 
 So people thought of using environment variables.
-You must have thought of the XDG specification, so the plan is to use `$XDG_DATA_HOME/[your-appname]/` on all platforms.
-Unfortunately, not all platforms support it, so we choose the more universal `$HOME`.
-Sadly, on early versions of Windows, there might not be `%HOME%`, but only `%userprofile%`.
-So, what should we do? And how do we do it?
-We can use external crates to automatically retrieve paths for different platforms or manually write different directory mapping relationships for different platforms.
+
+I guess you're thinking of the XDG specification. Since it's so useful, why don't we use `$XDG_DATA_HOME/[appname]/` on all platforms?
+
+Unfortunately, not all platforms support it, so we choose the more universal `$HOME`.  
+Sadly, on early versions of Windows, there might not be `%HOME%`, but only `%userprofile%`.  
+So, what should we do? And how do we do it?  
+We can use external crates to automatically retrieve paths for different platforms or manually write different directory mapping relationships for different platforms.  
 Great, it seems like we have solved the cross-platform issue, but we may have forgotten one thing.
-That is, the path separators on different platforms may be different.
+That is, the path separators on different platforms may be different.  
 We can generate paths for different platforms, but the format generated may not be very universal."
 
 - Windows: `C:\path\to\xxx`
