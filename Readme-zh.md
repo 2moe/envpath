@@ -194,7 +194,7 @@ As is well known, `[]` 是一个数组。但 `.de()` 究竟是什么？
 Ohhhh！I got it. 这个函数去了一趟德国（de），所以发生了改变，变成了有品德的函数。
 
 总之，我觉得您很聪明，这个函数的确发生了变化。  
-不过它只是将类似于 `$env: QuQ ?？ qwq-dir ? AwA-home` 的结构转换成另一个值。
+不过它只是将类似于 `$env: QuQ ?? qwq-dir ? AwA-home` 的结构转换成另一个值。
 
 ### serialisation & deserialisation
 
