@@ -42,7 +42,7 @@ dbg!(v.display(), v.exists());
 
 This is a simple example, and there are more features and concepts that we haven't mentioned here.
 
-Don't worry, take it step by step."
+Don't worry, take it step by step.
 
 It will then output something like the following.
 

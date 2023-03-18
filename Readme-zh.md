@@ -37,7 +37,7 @@ data = "/Users/[username]/Library/Application Support/x.y.z"
 这是一个好方法，但是有没有更通用的方法呢？  
 于是，人们想到了使用环境变量。
 
-我猜您想到了 XDG 规范，竟然它这么有用的话，那我们在所有平台上都使用 `$XDG_DATA_HOME/[appname]/` 如何？
+我猜您想到了 XDG 规范，既然它这么有用的话，那我们在所有平台上都使用 `$XDG_DATA_HOME/[appname]/` 如何？
 然而，不幸的是，并不是所有平台都支持，所以我们选择更通用的 `$HOME`。
 
 不幸的事情再次到来，在早期的 Windows 上，可能并没有 `%HOME%`, 而是只有 `%userprofile%`。  
