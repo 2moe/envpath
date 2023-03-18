@@ -428,7 +428,7 @@ For items not listed, use Linux data.
 | local-data | local_data | `$sd/Android/data` |
 | desktop    |            |                    |
 | doc        | document   | `$sd/Documents`    |
-| dl         | download   |                    |
+| dl         | download   | `$sd/Download`     |
 | bin        | exe        |                    |
 | first-path | first_path |                    |
 | last-path  | last_path  |                    |

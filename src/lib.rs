@@ -8,7 +8,6 @@ The library also supports optional features for getting common system paths:
 - `const-dirs` - Gets the value of some specific constants built into crate.
 - `project-dirs` - For generating project directories (user-specific data dir)
 - `base-dirs` - Provides standard directories on different platforms.
-
 ## Quick Start
 
 Before we start, please make sure that the Rust version is not too old.
@@ -102,7 +101,7 @@ But it only converts a structure like `$env: QuQ? ?? qwq-dir? AwA-home` into ano
 
 If you want to serialize/deserialize a configuration file, you need to enable the `serde` feature of envpath and add serde, as well as other related dependencies.
 
-Next, we will add a `ron` dependency (You can actually use formats such as toml, yaml or json, but you need to add the related dependencies instead of using ron.)
+Next, we will add a `ron` dependency (You can actually use formats such as toml, yaml or json, but you need to add the relevant dependencies instead of using ron.)
 
 ```sh
 # cargo add envpath --features=serde
@@ -329,7 +328,7 @@ For items not listed, use Linux data.
 | local-data | local_data | `$sd/Android/data` |
 | desktop    |            |                    |
 | doc        | document   | `$sd/Documents`    |
-| dl         | download   |                    |
+| dl         | download   | `$sd/Download`     |
 | bin        | exe        |                    |
 | first-path | first_path |                    |
 | last-path  | last_path  |                    |
@@ -511,6 +510,7 @@ Q: Why don't I see any difference from the first example?
 A: It allows you to use full-width symbols (colon and question mark) as separators, but this is limited.
 
 It depends on the first symbol that appears. That is to say, if the first separator is a half-width "?"(`\u{3F}`) instead of a full-width "？"(`\u{FF1F}`), then the rest should also be expressed in half-width.
+
 */
 use std::{self, borrow::Cow, ffi::OsStr};
 

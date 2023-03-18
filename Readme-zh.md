@@ -431,7 +431,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | local-data | local_data | `$sd/Android/data` |
 | desktop    |            |                    |
 | doc        | document   | `$sd/Documents`    |
-| dl         | download   |                    |
+| dl         | download   | `$sd/Download`     |
 | bin        | exe        |                    |
 | first-path | first_path |                    |
 | last-path  | last_path  |                    |
