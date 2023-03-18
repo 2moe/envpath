@@ -41,7 +41,7 @@ data = "/Users/[username]/Library/Application Support/x.y.z"
 
 This is a good approach, but is there a more universal method?"
 So people thought of using environment variables.
-You must have thought of the XDG specification, so the plan is to use `$XDG_DATA_DIR/[your-appname]/` on all platforms.
+You must have thought of the XDG specification, so the plan is to use `$XDG_DATA_HOME/[your-appname]/` on all platforms.
 Unfortunately, not all platforms support it, so we choose the more universal `$HOME`.
 Sadly, on early versions of Windows, there might not be `%HOME%`, but only `%userprofile%`.
 So, what should we do? And how do we do it?
