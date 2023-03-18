@@ -8,7 +8,9 @@
 
 注意: 本文包含大量非技术内容。
 
-在正式开始前，if it's not too much trouble, could you provide me with an answer to my query?
+在正式开始前，很抱歉打扰到您，能否请您解答我心中的一个小小的困惑呢？
+
+我们一直以来是如何解决跨平台路径配置的问题？
 
 假设有如下配置：
 
@@ -16,8 +18,6 @@
 [dir]
 data = "C:\\Users\\[username]\\AppData\\Roaming\\[dirname]"
 ```
-
-我们一直以来是如何解决跨平台路径配置的问题？
 
 也许我们会为配置文件新建一个 Map (e.g. `HashMap<String, Dirs>`), 让不同平台使用不同配置。
 
@@ -47,7 +47,7 @@ So, what should we do? And how do we do it?
 或者是手动为不同平台编写不同的目录映射关系。
 
 Nice！我们好像已经解决了跨平台问题，但可能忘记了一件事。  
-那就是不同平台的路径分隔符可能是不同的。
+那就是不同平台的路径分隔符可能是不同的。  
 我们可以为不同平台生成路径，但是生成的格式可能不太通用。
 
 - Windows 用 `C:\path\to\xxx`
@@ -411,7 +411,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 关于 tmp 与 temp
 
 - tmp: 先获取 `$env: tmpdir` 的值，若存在, 则使用该值。若不存在，使用 `env::temp_dir()` 获取，判断文件路径是否只读，若是，则使用 `["$dir: cache", "tmp"]`
-  - 有些平台的 tmp 目录对于普通用户可能是只读的，没错，说的就是您 `/data/local/tmp`
+  - 有些平台的 tmp 目录对于普通用户可能是只读的，没错，说的就是你： `/data/local/tmp`
 - temp: 使用 `env::temp_dir()` 获取, 不进行判断
 
 #### Android

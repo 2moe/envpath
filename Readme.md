@@ -15,14 +15,14 @@ Note: This readme contains a lot of non-technical content.
 
 Before the official start, if it's not too much trouble, could you provide me with an answer to my query?
 
+How have we been solving the problem of cross-platform path configuration?
+
 Assume the following configuration.
 
 ```toml
 [dir]
 data = "C:\\Users\\[username]\\AppData\\Roaming\\[dirname]"
 ```
-
-How have we been solving the problem of cross-platform path configuration?
 
 Perhaps we would create a new Map (e.g. `HashMap<String, Dirs>`) for the configuration file, allowing different platforms to use different configurations.
 
@@ -39,7 +39,8 @@ data = "/Users/[username]/Library/Application Support/x.y.z"
 [dir.your-os-name]
 ```
 
-This is a good approach, but is there a more universal method?"
+This is a good approach, but is there a more universal method?
+
 So people thought of using environment variables.
 You must have thought of the XDG specification, so the plan is to use `$XDG_DATA_HOME/[your-appname]/` on all platforms.
 Unfortunately, not all platforms support it, so we choose the more universal `$HOME`.
