@@ -51,7 +51,7 @@ So, what should we do? And how do we do it?
 We can use external crates to automatically retrieve paths for different platforms or manually write different directory mapping relationships for different platforms.  
 Great, it seems like we have solved the cross-platform issue, but we may have forgotten one thing.
 That is, the path separators on different platforms may be different.  
-We can generate paths for different platforms, but the format generated may not be very universal."
+We can generate paths for different platforms, but the format generated may not be very universal.
 
 - Windows: `C:\path\to\xxx`
 - Unix-like: `/path/to/xxx`
@@ -141,7 +141,7 @@ dbg!(v.display(), v.exists());
 
 This is a simple example, and there are more features and concepts that we haven't mentioned here.
 
-Don't worry, take it step by step."
+Don't worry, take it step by step.
 
 It will then output something like the following.
 
