@@ -47,7 +47,7 @@ Don't worry, take it step by step."
 It will then output something like the following.
 
 ```js
-[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq"
+[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq/app"
 [src/lib.rs:74] v.exists() = false
 ```
 
@@ -574,7 +574,7 @@ mod tests {
     #[test]
     fn readme_doc_quick_start_0() {
         let v =
-            EnvPath::from(["$dir: data", "$const: pkg", "$env: test_qwq ? user"])
+            EnvPath::from(["$dir: data", "$const: pkg", "$env: test_qwq", "app"])
                 .de();
         dbg!(v.display(), v.exists());
     }

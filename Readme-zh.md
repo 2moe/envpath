@@ -150,7 +150,7 @@ dbg!(v.display(), v.exists());
 然后它会输出类似于以下的内容
 
 ```js
-[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq"
+[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq/app"
 [src/lib.rs:74] v.exists() = false
 ```
 

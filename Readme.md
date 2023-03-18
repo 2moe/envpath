@@ -143,7 +143,7 @@ Don't worry, take it step by step."
 It will then output something like the following.
 
 ```js
-[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq"
+[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq/app"
 [src/lib.rs:74] v.exists() = false
 ```
 
