@@ -233,6 +233,9 @@ impl EnvPath {
             "cfg" | "config" => Self::set_proj_cfg(name, proj), // Set the configuration directory
             "data" => Self::set_proj_data(name, proj), // Set the data directory
             "local-data" | "local_data" => Self::set_proj_local_data(name, proj), // Set the local data directory
+            "local-cfg" | "local_cfg" | "local_config" => {
+                proj.and_then(|x| Self::into_os_cow(x.config_local_dir()))
+            }
             "pref" | "preference" => {
                 proj.and_then(|x| Self::into_os_cow(x.preference_dir())) // Set the preference directory
             }
