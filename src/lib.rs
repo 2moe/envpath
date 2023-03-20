@@ -8,6 +8,7 @@ The library also supports optional features for getting common system paths:
 - `const-dirs` - Gets the value of some specific constants built into crate.
 - `project-dirs` - For generating project directories (user-specific data dir)
 - `base-dirs` - Provides standard directories on different platforms.
+
 ## Quick Start
 
 Before we start, please make sure that the Rust version is not too old.
@@ -405,17 +406,17 @@ For items not listed, use Linux data.
 
 Most of the data is obtained from [directories](https://docs.rs/directories/latest/directories/struct.ProjectDirs.html).
 
-Use `$proj(qualifier.organization.application):name` (e.g. `$proj(com.moz.ff):data`) or `$proj(com.company-name.app-name):alias` to obtain the project directory.
+Use `$proj(qualifier.organization.application):name` (e.g. `$proj(org.moz.ff):data`) or `$proj(com.company-name.app-name):alias` to obtain the project directory.
 
 These directories will vary depending on the operating system and the specific configuration.
 
-Assuming the project is `(com.moz.ff)`, here's an example:
+Assuming the project is `(org.moz.ff)`, here's an example:
 
 #### Linux
 
 | name       | alias      | Linux `$proj`                                          |
 | ---------- | ---------- | ------------------------------------------------------ |
-| path       | path       | (the project path fragment): ff                        |
+| path       |            | (the project path fragment): ff                        |
 | cache      |            | `$xdg_cache_home/$proj_path`:(`$home/.cache/ff`)       |
 | cfg        | config     | `$xdg_config_home/$proj_path`:(`$home/.config/ff`)     |
 | data       |            | `$xdg_data_home/$proj_path`:(`$home/.local/share/ff`)  |
@@ -434,11 +435,11 @@ For items not listed, use Linux data.
 
 | name       | alias      | Android `$proj`               |
 | ---------- | ---------- | ----------------------------- |
-| path       | path       | com.moz.ff                    |
-| cache      |            | /data/data/com.moz.ff/cache   |
-| cfg        | config     | /data/data/com.moz.ff/files   |
-| data       |            | /data/data/com.moz.ff         |
-| local-data | local_data | `$sd/Android/data/com.moz.ff` |
+| path       |            | org.moz.ff                    |
+| cache      |            | /data/data/org.moz.ff/cache   |
+| cfg        | config     | /data/data/org.moz.ff/files   |
+| data       |            | /data/data/org.moz.ff         |
+| local-data | local_data | `$sd/Android/data/org.moz.ff` |
 | pref       | preference |                               |
 | runtime    |            |                               |
 | state      |            |                               |
@@ -447,18 +448,18 @@ For items not listed, use Linux data.
 
 | name       | alias      | macOS `$proj`                                  |
 | ---------- | ---------- | ---------------------------------------------- |
-| path       | path       | com.moz.ff                                     |
-| cache      |            | `$home/Library/Caches/com.moz.ff`              |
-| cfg        | config     | `$home/Library/Application Support/com.moz.ff` |
-| data       |            | `$home/Library/Application Support/com.moz.ff` |
-| local-data | local_data | `$home/Library/Application Support/com.moz.ff` |
-| pref       | preference | `$home/Library/Preferences/com.moz.ff`         |
+| path       |            | org.moz.ff                                     |
+| cache      |            | `$home/Library/Caches/org.moz.ff`              |
+| cfg        | config     | `$home/Library/Application Support/org.moz.ff` |
+| data       |            | `$home/Library/Application Support/org.moz.ff` |
+| local-data | local_data | `$home/Library/Application Support/org.moz.ff` |
+| pref       | preference | `$home/Library/Preferences/org.moz.ff`         |
 
 #### Windows
 
 | name       | alias      | Windows `$proj`                       |
 | ---------- | ---------- | ------------------------------------- |
-| path       | path       | `moz\ff`                              |
+| path       |            | `moz\ff`                              |
 | cache      |            | `$home\AppData\Local\moz\ff\cache`    |
 | cfg        | config     | `$home\AppData\Roaming\moz\ff\config` |
 | data       |            | `$home\AppData\Roaming\moz\ff\data`   |
@@ -473,13 +474,13 @@ Don't worry, if you have already mastered the core syntax, then you can quickly 
 
 Assuming there are three projects:
 
-- (com. moz. ff)
+- (org. moz. ff)
 - (com. gg. cr)
 - (com. ms. eg)
 
 ---
 
-The first example is: `$proj (com. moz. ff): runtime? data?? state? (com. gg. cr): cfg?? cache? (com. ms. eg): local-data? data`
+The first example is: `$proj (org. moz. ff): runtime? data?? state? (com. gg. cr): cfg?? cache? (com. ms. eg): local-data? data`
 
 Let's start parsing the runtime of the ff project, unfortunately, it does not exist.
 
@@ -503,14 +504,13 @@ The final return value is the cfg directory of the cr project!
 
 ---
 
-The second example is: `$proj (com . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
+The second example is: `$proj (org . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
 
 Q: Why don't I see any difference from the first example?
 
 A: It allows you to use full-width symbols (colon and question mark) as separators, but this is limited.
 
 It depends on the first symbol that appears. That is to say, if the first separator is a half-width "?"(`\u{3F}`) instead of a full-width "？"(`\u{FF1F}`), then the rest should also be expressed in half-width.
-
 */
 use std::{self, borrow::Cow, ffi::OsStr};
 

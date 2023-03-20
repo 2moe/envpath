@@ -509,15 +509,15 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 为项目生成指定目录。  
 大部分数据从 [directories](https://docs.rs/directories/latest/directories/struct.ProjectDirs.html) 获取。
 
-使用 `$proj(qualifier.  organization.   application): name` (e.g. `$proj(com. moz. ff): data`) 或者是 `$proj(com.company-name.app-name): alias` 来获取 project dir。
+使用 `$proj(qualifier.  organization.   application): name` (e.g. `$proj(org. moz. ff): data`) 或者是 `$proj(com.company-name.app-name): alias` 来获取 project dir。
 
-接下来假设项目为 `(com. moz. ff)`
+接下来假设项目为 `(org. moz. ff)`
 
 #### Linux
 
 | name       | alias      | Linux `$proj`                                          |
 | ---------- | ---------- | ------------------------------------------------------ |
-| path       | path       | (the project path fragment): ff                        |
+| path       |            | (the project path fragment): ff                        |
 | cache      |            | `$xdg_cache_home/$proj_path`:(`$home/.cache/ff`)       |
 | cfg        | config     | `$xdg_config_home/$proj_path`:(`$home/.config/ff`)     |
 | data       |            | `$xdg_data_home/$proj_path`:(`$home/.local/share/ff`)  |
@@ -536,11 +536,11 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
 | name       | alias      | Android `$proj`               |
 | ---------- | ---------- | ----------------------------- |
-| path       | path       | com.moz.ff                    |
-| cache      |            | /data/data/com.moz.ff/cache   |
-| cfg        | config     | /data/data/com.moz.ff/files   |
-| data       |            | /data/data/com.moz.ff         |
-| local-data | local_data | `$sd/Android/data/com.moz.ff` |
+| path       |            | org.moz.ff                    |
+| cache      |            | /data/data/org.moz.ff/cache   |
+| cfg        | config     | /data/data/org.moz.ff/files   |
+| data       |            | /data/data/org.moz.ff         |
+| local-data | local_data | `$sd/Android/data/org.moz.ff` |
 | pref       | preference |                               |
 | runtime    |            |                               |
 | state      |            |                               |
@@ -549,18 +549,18 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
 | name       | alias      | macOS `$proj`                                  |
 | ---------- | ---------- | ---------------------------------------------- |
-| path       | path       | com.moz.ff                                     |
-| cache      |            | `$home/Library/Caches/com.moz.ff`              |
-| cfg        | config     | `$home/Library/Application Support/com.moz.ff` |
-| data       |            | `$home/Library/Application Support/com.moz.ff` |
-| local-data | local_data | `$home/Library/Application Support/com.moz.ff` |
-| pref       | preference | `$home/Library/Preferences/com.moz.ff`         |
+| path       |            | org.moz.ff                                     |
+| cache      |            | `$home/Library/Caches/org.moz.ff`              |
+| cfg        | config     | `$home/Library/Application Support/org.moz.ff` |
+| data       |            | `$home/Library/Application Support/org.moz.ff` |
+| local-data | local_data | `$home/Library/Application Support/org.moz.ff` |
+| pref       | preference | `$home/Library/Preferences/org.moz.ff`         |
 
 #### Windows
 
 | name       | alias      | Windows `$proj`                       |
 | ---------- | ---------- | ------------------------------------- |
-| path       | path       | `moz\ff`                              |
+| path       |            | `moz\ff`                              |
 | cache      |            | `$home\AppData\Local\moz\ff\cache`    |
 | cfg        | config     | `$home\AppData\Roaming\moz\ff\config` |
 | data       |            | `$home\AppData\Roaming\moz\ff\data`   |
@@ -574,11 +574,11 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
 假设有三个项目：
 
-- (com. moz. ff)
+- (org. moz. ff)
 - (com. gg. cr)
 - (com . ms . eg)
 
-第一个例子为： `$proj (com . moz . ff ): runtime ? data ?? state ? (com . gg . cr): cfg ?? cache ? (com . ms . eg): local-data ? data`
+第一个例子为： `$proj (org . moz . ff ): runtime ? data ?? state ? (com . gg . cr): cfg ?? cache ? (com . ms . eg): local-data ? data`
 
 我们开始解析 ff 项目的 runtime, 很不幸，它不存在。  
 我们接着解析 data！太好了，我们发现它的值是存在的。  
@@ -595,7 +595,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 cr 的 cfg 不仅值存在，路径也是存在的。  
 最终的胜者是 cr 家的 cfg，尽管如此，但她却不怎么开心的样子。在离开前，她嘴角边还嘟喃道：“明明只是个解析器，竟然敢这么嚣张，哼！”
 
-第二个例子为： `$proj (com . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
+第二个例子为： `$proj (org . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
 
 Q: 咦？我怎么没看出来，这与第一个例子有何不同？  
 A: 届时，汝自会知晓。  
