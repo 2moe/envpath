@@ -1,5 +1,9 @@
 # EnvPath
 
+[![Documentation](https://docs.rs/envpath/badge.svg)](https://docs.rs/envpath)
+
+[![Apache-2 licensed](https://img.shields.io/crates/l/envpath.svg)](./License)
+
 A library for **parsing** and **deserialising** paths with special rules.
 
 The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg", "$const: deb-arch"]`
