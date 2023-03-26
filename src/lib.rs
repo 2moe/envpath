@@ -588,6 +588,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "serde")]
     fn readme_doc_quick_start_serialisation() {
         use serde::{Deserialize, Serialize};
 
@@ -608,6 +609,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "serde")]
     fn readme_doc_quick_start_serialisation_deser() {
         use serde::{Deserialize, Serialize};
         use std::fs::File;
