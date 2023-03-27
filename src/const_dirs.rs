@@ -11,7 +11,9 @@ impl EnvPath {
         // In fact, this is only the alias equivalent of the `os_cow()` function.
         let as_cow = Self::os_cow;
 
-        dbg!(&ident);
+        // #[cfg(debug_assertions)]
+        // dbg!(&ident);
+
         match ident {
             "pkg" | "pkg_name" | "pkg-name" => as_cow(env!("CARGO_PKG_NAME")),
             // "bin" | "bin_name" => as_cow(env!("CARGO_BIN_NAME")),
