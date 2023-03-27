@@ -12,9 +12,6 @@ The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg"]`
 """
 
 [features]
-# default = ["const-dirs", "base-dirs"]
-# default = ["const-dirs", "project-dirs"]
-# default = ["const-dirs", "base-dirs", "project-dirs"]
 default = ["const-dirs", "base-dirs", "project-dirs"]
 base-dirs = ["dep:dirs"]
 project-dirs = ["dep:directories"]

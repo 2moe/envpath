@@ -120,20 +120,17 @@ EnvPath(raw) 用的也是数组结构（其实是 Vector），但是使用了特
 
 ### Basic guide
 
-首先，我们用 `cargo new hello` 创建一个 名称为 hello 的 binary 项目。
-进入项目目录后，我们需要添加依赖:
+首先，我们需要添加依赖:
 
 ```sh
 cargo add envpath
 ```
 
-默认启用了 `serde` 功能，如果只是将 rust 的数据结构进行转换的话，那是不需要启用此功能的。
+或者是根据需求添加 features, 而不是使用默认的功能。
 
 ```sh
 cargo add envpath --no-default-features --features=base-dirs,const-dirs,project-dirs
 ```
-
-您也可以在 Cargo.toml 里禁用默认功能, 例如： `envpath = { version = "0.0.1-alpha.1", default-features = false , features = ["base-dirs", "const-dirs"] }`
 
 然后在我们的 `main()` 或者是测试函数里添加以下内容。
 
@@ -203,7 +200,7 @@ Ohhhh！I got it. 这个函数去了一趟德国（de），所以发生了改变
 下面我们将添加一个 `ron` 依赖（实际上您还可以用 toml, yaml 或 json 等格式，不过相关依赖就不是 ron 了）
 
 ```sh
-# cargo add envpath --features=serde
+cargo add envpath --features=serde
 cargo add serde --features=derive
 cargo add ron
 ```

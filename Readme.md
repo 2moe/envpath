@@ -119,20 +119,11 @@ Because this library uses some relatively new syntax, such as let-else (which re
 
 ### Basic guide
 
-First, let's create a binary project named hello with `cargo new hello`.
-After entering the project directory, we need to add dependencies:
-
-```sh
-cargo add envpath
-```
-
-The serde feature is enabled by default. If you only need to convert Rust data structures, you don't need to enable this feature.
+First, we need to add the dependency.
 
 ```sh
 cargo add envpath --no-default-features --features=base-dirs,const-dirs,project-dirs
 ```
-
-Or you can disable the default features in Cargo.toml. For example: `envpath = { version = "0.0.1-alpha.1", default-features = false , features = ["base-dirs", "const-dirs"] }`
 
 Then add the following content to our `main()` or test function.
 
@@ -208,7 +199,7 @@ If you want to serialize/deserialize a configuration file, you need to enable th
 Next, we will add a `ron` dependency (You can actually use formats such as toml, yaml or json, but you need to add the relevant dependencies instead of using ron.)
 
 ```sh
-# cargo add envpath --features=serde
+cargo add envpath --features=serde
 cargo add serde --features=derive
 cargo add ron
 ```
