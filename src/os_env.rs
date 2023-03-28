@@ -60,18 +60,18 @@ impl EnvPath {
         }
     }
 
+    pub(crate) fn into_os_env(x: &str) -> OsCow {
+        var_os(x).map(Cow::from)
+    }
+
     /// For simple rules, get the environment variables directly.
     /// For complex rules, give them to `parse_dir_rules()`.
     pub(crate) fn handle_envs(ident: &str) -> OsCow {
         use ControlFlow::{Break, Continue};
 
-        fn into_os_env(x: &str) -> OsCow {
-            var_os(x).map(Cow::from)
-        }
-
         match Self::get_question_mark_separator(ident) {
             sep if sep == ' ' => var_os(ident).and_then(Self::into_os_cow),
-            sep => match Self::parse_dir_rules(ident, into_os_env, sep) {
+            sep => match Self::parse_dir_rules(ident, Self::into_os_env, sep) {
                 Break(x) | Continue(x) => x, // _ => None,
             },
         }

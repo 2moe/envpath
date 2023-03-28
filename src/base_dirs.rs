@@ -172,6 +172,40 @@ impl EnvPath {
             "video" | "movie" => Self::set_dir(video_dir, "Movies"),
             "tmp" => Self::set_tmp_dir(),
             "temp" | "temporary" => Self::into_os_cow(env::temp_dir()),
+            #[cfg(target_os = "android")]
+            "sd" => Self::os_cow(Self::AND_SD),
+            #[cfg(windows)]
+            "local-low" | "local_low" => into_cow(data_local_dir().and_then(|p| {
+                p.parent()
+                    .map(|x| x.join("LocalLow"))
+            })),
+            "cli-data" | "cli_data" => into_cow(data_local_dir()),
+            "cli-cfg" | "cli_cfg" | "cli_config" => into_cow(config_local_dir()),
+            "cli-cache" | "cli_cache" => into_cow(cache_dir()),
+            #[cfg(windows)]
+            "progam-files" | "program_files" => Self::into_os_env("ProgramFiles")
+                .or_else(|| Self::os_cow(r#"C:\Program Files"#)),
+            #[cfg(windows)]
+            "program-files-x86" | "program_files_x86" => {
+                Self::into_os_env("ProgramFiles(x86)")
+                    .or_else(|| Self::os_cow(r#"=C:\Program Files (x86)"#))
+            }
+            #[cfg(windows)]
+            "common-program-files" | "common_program_files" => {
+                Self::into_os_env("CommonProgramFiles")
+                    .or_else(|| Self::os_cow(r#"C:\Program Files\Common Files"#))
+            }
+            #[cfg(windows)]
+            "common-program-files-x86" | "common_program_files_x86" => {
+                Self::into_os_env("CommonProgramFiles(x86)").or_else(|| {
+                    Self::os_cow(r#"C:\Program Files (x86)\Common Files"#)
+                })
+            }
+            #[cfg(windows)]
+            "program-data" | "program_data" => Self::into_os_env("ProgramData")
+                .or_else(|| Self::os_cow(r#"C:\ProgramData"#)),
+            #[cfg(windows)]
+            "microsoft" => into_cow(data_dir().map(|x| x.join("Microsoft"))),
             _ => None,
         }
     }

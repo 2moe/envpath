@@ -91,10 +91,10 @@ impl EnvPath {
     ///     )))
     /// );
     /// ```
+    pub(crate) const AND_SD: &str = "/storage/self/primary";
     #[cfg(target_os = "android")]
     pub(crate) fn set_android_dir(s: &str) -> OsCow {
-        const SD: &str = "/storage/self/primary";
-        Self::into_os_cow(std::path::Path::new(SD).join(s))
+        Self::into_os_cow(std::path::Path::new(Self::AND_SD).join(s))
     }
 
     /// Converts the given string into an `OsCow` object.

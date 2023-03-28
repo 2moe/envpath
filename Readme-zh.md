@@ -401,6 +401,9 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
 | tmp        |              |                                          |
 | temp       | temporary    |                                          |
+| cli-data   | cli_data     | `$xdg_data_home`                         |
+| cli-cfg    | cli_config   | `$xdg_config_home`                       |
+| cli-cache  | cli_cache    | `$xdg_cache_home`                        |
 
 first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 若有 PATH 为 `/usr/local/bin:/usr/bin`，
@@ -420,31 +423,76 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
 对于没有列出的内容，使用 linux 的数据
 
-| name       | alias        | Android `$dir`     |
-| ---------- | ------------ | ------------------ |
-| home       |              |                    |
-| cache      |              |                    |
-| cfg        | config       |                    |
-| data       |              |                    |
-| local-data | local_data   | `$sd/Android/data` |
-| local-cfg  | local_config |                    |
-| desktop    |              |                    |
-| doc        | document     | `$sd/Documents`    |
-| dl         | download     | `$sd/Download`     |
-| bin        | exe          |                    |
-| first-path | first_path   |                    |
-| last-path  | last_path    |                    |
-| font       | typeface     |                    |
-| pic        | picture      | `$sd/Pictures`     |
-| pref       | preference   |                    |
-| pub        | public       |                    |
-| runtime    |              |                    |
-| state      |              |                    |
-| video      |              | `$sd/Movies`       |
-| music      | audio        | `$sd/Music`        |
-| template   |              |                    |
-| tmp        |              |                    |
-| temp       | temporary    |                    |
+| name       | alias        | Android `$dir`        |
+| ---------- | ------------ | --------------------- |
+| home       |              |                       |
+| cache      |              |                       |
+| cfg        | config       |                       |
+| data       |              |                       |
+| local-data | local_data   | `$sd/Android/data`    |
+| local-cfg  | local_config |                       |
+| desktop    |              |                       |
+| doc        | document     | `$sd/Documents`       |
+| dl         | download     | `$sd/Download`        |
+| bin        | exe          |                       |
+| first-path | first_path   |                       |
+| last-path  | last_path    |                       |
+| font       | typeface     |                       |
+| pic        | picture      | `$sd/Pictures`        |
+| pref       | preference   |                       |
+| pub        | public       |                       |
+| runtime    |              |                       |
+| state      |              |                       |
+| video      |              | `$sd/Movies`          |
+| music      | audio        | `$sd/Music`           |
+| template   |              |                       |
+| tmp        |              |                       |
+| temp       | temporary    |                       |
+| cli-data   | cli_data     | `$xdg_data_home`      |
+| cli-cfg    | cli_config   | `$xdg_config_home`    |
+| cli-cache  | cli_cache    | `$xdg_cache_home`     |
+| sd         |              | /storage/self/primary |
+
+#### Windows
+
+- var:
+  - ms_dir = `$home\AppData\Roaming\Microsoft`
+
+| name                     | alias                    | Windows `$dir`                                                      |
+| ------------------------ | ------------------------ | ------------------------------------------------------------------- |
+| home                     |                          | `C:\Users\m`                                                        |
+| cache                    |                          | `$localappdata`:(`$home\AppData\Local`)                             |
+| cfg                      | config                   | `$appdata`: (`$home\AppData\Roaming`)                               |
+| data                     |                          | `$home\AppData\Roaming`                                             |
+| local-data               | local_data               | `$home\AppData\Local`                                               |
+| local-cfg                | local_config             | `$home\AppData\Local`                                               |
+| desktop                  |                          | `$home\Desktop`                                                     |
+| doc                      | document                 | `$home\Documents`                                                   |
+| dl                       | download                 | `$home\Downloads`                                                   |
+| bin                      | exe                      | `$ms_dir\WindowsApps`                                               |
+| first-path               | first_path               |                                                                     |
+| last-path                | last_path                |                                                                     |
+| font                     | typeface                 | `$ms_dir\Windows\Fonts`                                             |
+| pic                      | picture                  | `$home\Pictures`                                                    |
+| pref                     | preference               | `$home\AppData\Roaming`                                             |
+| pub                      | public                   | `$home\Public`                                                      |
+| runtime                  |                          | None                                                                |
+| state                    |                          | None                                                                |
+| video                    |                          | `$home\Videos`                                                      |
+| music                    | audio                    | `$home\music`                                                       |
+| template                 |                          | `$ms_dir\Windows\Templates`                                         |
+| tmp                      |                          |                                                                     |
+| temp                     | temporary                |                                                                     |
+| cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
+| cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
+| cli-cache                | cli_cache                | `$home\AppData\Local`                                               |
+| progam-files             | program_files            | `$ProgramFiles`: (`C:\Program Files`)                               |
+| program-files-x86        | program_files_x86        | `$ProgramFiles(x86)`: (`C:\Program Files (x86)`)                    |
+| common-program-files     | common_program_files     | `$CommonProgramFiles`: (`C:\Program Files\Common Files`)            |
+| common-program-files-x86 | common_program_files_x86 | `$CommonProgramFiles(x86)`: (`C:\Program Files (x86)\Common Files`) |
+| program-data             | program_data             | `$ProgramData`: (`C:\ProgramData`)                                  |
+| microsoft                |                          | `$home\AppData\Local\Microsoft`                                     |
+| local-low                | local_low                | `$home\AppData\LocalLow`                                            |
 
 #### macOS
 
@@ -473,37 +521,9 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | template   |              | None                                |
 | tmp        |              |                                     |
 | temp       | temporary    |                                     |
-
-#### Windows
-
-- var:
-  - ms_dir = `$home\AppData\Roaming\Microsoft`
-
-| name       | alias        | Windows `$dir`              |
-| ---------- | ------------ | --------------------------- |
-| home       |              | `C:\Users\m`                |
-| cache      |              | `$home\AppData\Local`       |
-| cfg        | config       | `$home\AppData\Roaming`     |
-| data       |              | `$home\AppData\Roaming`     |
-| local-data | local_data   | `$home\AppData\Local`       |
-| local-cfg  | local_config | `$home\AppData\Local`       |
-| desktop    |              | `$home\Desktop`             |
-| doc        | document     | `$home\Documents`           |
-| dl         | download     | `$home\Downloads`           |
-| bin        | exe          | `$ms_dir\WindowsApps`       |
-| first-path | first_path   |                             |
-| last-path  | last_path    |                             |
-| font       | typeface     | `$ms_dir\Windows\Fonts`     |
-| pic        | picture      | `$home\Pictures`            |
-| pref       | preference   | `$home\AppData\Roaming`     |
-| pub        | public       | `$home\Public`              |
-| runtime    |              | None                        |
-| state      |              | None                        |
-| video      |              | `$home\Videos`              |
-| music      | audio        | `$home\music`               |
-| template   |              | `$ms_dir\Windows\Templates` |
-| tmp        |              |                             |
-| temp       | temporary    |                             |
+| cli-data   | cli_data     | `$home/Library/Application Support` |
+| cli-cfg    | cli_config   | `$home/Library/Application Support` |
+| cli-cache  | cli_cache    | `$home/Library/Caches`              |
 
 ### project
 
@@ -527,6 +547,9 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | pref       | preference   | `$xdg_config_home/$proj_path`                          |
 | runtime    |              | `$xdg_runtime_dir/$proj_path`:(`/run/user/[uid]/ff`)   |
 | state      |              | `$xdg_state_home/$proj_path`:(`$home/.local/state/ff`) |
+| cli-data   | cli_data     | `$xdg_data_home/$proj_path`                            |
+| cli-cfg    | cli_config   | `$xdg_config_home/$proj_path`                          |
+| cli-cache  | cli_cache    | `$xdg_cache_home/$proj_path`                           |
 
 #### Android
 
@@ -534,31 +557,20 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
   - sd = "/storage/self/primary"
 
-对于没有列出的内容，使用 linux 的数据
-
-| name       | alias        | Android `$proj`               |
-| ---------- | ------------ | ----------------------------- |
-| path       |              | org.moz.ff                    |
-| cache      |              | /data/data/org.moz.ff/cache   |
-| cfg        | config       | /data/data/org.moz.ff/files   |
-| data       |              | /data/data/org.moz.ff         |
-| local-data | local_data   | `$sd/Android/data/org.moz.ff` |
-| local-cfg  | local_config |                               |
-| pref       | preference   |                               |
-| runtime    |              |                               |
-| state      |              |                               |
-
-#### macOS
-
-| name       | alias        | macOS `$proj`                                  |
-| ---------- | ------------ | ---------------------------------------------- |
-| path       |              | org.moz.ff                                     |
-| cache      |              | `$home/Library/Caches/org.moz.ff`              |
-| cfg        | config       | `$home/Library/Application Support/org.moz.ff` |
-| data       |              | `$home/Library/Application Support/org.moz.ff` |
-| local-data | local_data   | `$home/Library/Application Support/org.moz.ff` |
-| local-cfg  | local_config | `$home/Library/Application Support/org.moz.ff` |
-| pref       | preference   | `$home/Library/Preferences/org.moz.ff`         |
+| name       | alias        | Android `$proj`                     |
+| ---------- | ------------ | ----------------------------------- |
+| path       |              | org.moz.ff                          |
+| cache      |              | /data/data/org.moz.ff/cache         |
+| cfg        | config       | /data/data/org.moz.ff/files         |
+| data       |              | /data/data/org.moz.ff               |
+| local-data | local_data   | `$sd/Android/data/org.moz.ff`       |
+| local-cfg  | local_config | `$sd/Android/data/org.moz.ff/files` |
+| pref       | preference   | /data/data/org.moz.ff/files         |
+| runtime    |              | `$xdg_runtime_dir/ff`               |
+| state      |              | `$xdg_data_home/ff`                 |
+| cli-data   | cli_data     | `$xdg_data_home/ff`                 |
+| cli-cfg    | cli_config   | `$xdg_config_home/ff`               |
+| cli-cache  | cli_cache    | `$xdg_cache_home/ff`                |
 
 #### Windows
 
@@ -571,6 +583,25 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | local-data | local_data   | `$home\AppData\Local\moz\ff\data`     |
 | local-cfg  | local_config | `$home\AppData\Local\moz\ff\config`   |
 | pref       | preference   | `$home\AppData\Roaming\moz\ff\config` |
+| cli-data   | cli_data     | `$home\AppData\Local\moz\ff\data`     |
+| cli-cfg    | cli_config   | `$home\AppData\Local\moz\ff\config`   |
+| cli-cache  | cli_cache    | `$home\AppData\Local\moz\ff\cache`    |
+| local-low  | local_low    | `$home\AppData\LocalLow\moz\ff`       |
+
+#### macOS
+
+| name       | alias        | macOS `$proj`                                  |
+| ---------- | ------------ | ---------------------------------------------- |
+| path       |              | org.moz.ff                                     |
+| cache      |              | `$home/Library/Caches/org.moz.ff`              |
+| cfg        | config       | `$home/Library/Application Support/org.moz.ff` |
+| data       |              | `$home/Library/Application Support/org.moz.ff` |
+| local-data | local_data   | `$home/Library/Application Support/org.moz.ff` |
+| local-cfg  | local_config | `$home/Library/Application Support/org.moz.ff` |
+| pref       | preference   | `$home/Library/Preferences/org.moz.ff`         |
+| cli-data   | cli_data     | `$home/Library/Application Support/org.moz.ff` |
+| cli-cfg    | cli_config   | `$home/Library/Application Support/org.moz.ff` |
+| cli-cache  | cli_cache    | `$home/Library/Caches/org.moz.ff`              |
 
 #### project 中的 "??"
 

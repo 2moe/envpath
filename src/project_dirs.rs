@@ -4,6 +4,13 @@ use crate::{
     OsCow,
 };
 use directories::ProjectDirs;
+
+#[cfg(windows)]
+use directories::BaseDirs;
+
+#[cfg(target_os = "android")]
+use std::path::PathBuf;
+
 use std::{borrow::Cow, ops::ControlFlow, path::Path};
 
 /// Implement additional methods for EnvPath when the "project-dirs" feature is enabled
@@ -56,61 +63,20 @@ impl EnvPath {
         }
     }
 
-    // Method to set the project cache directory
-    pub(crate) fn set_proj_cache<'a>(
-        _name: &str,
+    // Method to set the project directory
+    pub(crate) fn set_proj_dir<'a, F>(
         proj: Option<&ProjectDirs>,
-    ) -> OsCow<'a> {
+        f: F,
+        _android_iter: &[&str],
+    ) -> OsCow<'a>
+    where
+        F: Fn(&ProjectDirs) -> &Path,
+    {
         match () {
             #[cfg(target_os = "android")]
-            () => Self::into_os_cow(PathBuf::from_iter([
-                "/", "data", "data", _name, "cache",
-            ])), // If the target OS is Android, use a specific path for the cache directory
+            () => Self::into_os_cow(PathBuf::from_iter(_android_iter)),
             #[allow(unreachable_patterns)]
-            () => proj.and_then(|s| Self::into_os_cow(s.cache_dir())), // Otherwise, use the cache directory provided by the ProjectDirs object
-        }
-    }
-
-    // Method to set the project configuration directory
-    pub(crate) fn set_proj_cfg<'a>(
-        _name: &str,
-        proj: Option<&ProjectDirs>,
-    ) -> OsCow<'a> {
-        match () {
-            #[cfg(target_os = "android")]
-            () => Self::into_os_cow(PathBuf::from_iter([
-                "/", "data", "data", _name, "files",
-            ])), // If the target OS is Android, use a specific path for the configuration directory
-            #[allow(unreachable_patterns)]
-            () => proj.and_then(|s| Self::into_os_cow(s.config_dir())), // Otherwise, use the configuration directory provided by the ProjectDirs object
-        }
-    }
-
-    // Method to set the project data directory
-    pub(crate) fn set_proj_data<'a>(
-        _name: &str,
-        proj: Option<&ProjectDirs>,
-    ) -> OsCow<'a> {
-        match () {
-            #[cfg(target_os = "android")]
-            () => {
-                Self::into_os_cow(PathBuf::from_iter(["/", "data", "data", _name]))
-            } // If the target OS is Android, use a specific path for the data directory
-            #[allow(unreachable_patterns)]
-            () => proj.and_then(|s| Self::into_os_cow(s.data_dir())), // Otherwise, use the data directory provided by the ProjectDirs object
-        }
-    }
-
-    // Method to set the project local data directory
-    pub(crate) fn set_proj_local_data<'a>(
-        _name: &str,
-        proj: Option<&ProjectDirs>,
-    ) -> OsCow<'a> {
-        match () {
-            #[cfg(target_os = "android")]
-            () => Self::set_android_dir(format!("Android/data/{_name}")), // If the target OS is Android, use a specific path for the local data directory
-            #[allow(unreachable_patterns)]
-            () => proj.and_then(|s| Self::into_os_cow(s.data_local_dir())), // Otherwise, use the local data directory provided by the ProjectDirs object
+            () => proj.and_then(|s| Self::into_os_cow(f(s))), // Otherwise, use the configuration directory provided by the ProjectDirs object
         }
     }
 
@@ -227,20 +193,62 @@ impl EnvPath {
         let and_then_cow = |s: Option<&Path>| s.and_then(Self::into_os_cow);
 
         // Determine which project directory is being requested and set the corresponding path
+        let proj_path = || Self::set_proj_path(name, proj);
+
         match ident {
-            "path" => Self::set_proj_path(name, proj), // Set the project path
-            "cache" => Self::set_proj_cache(name, proj), // Set the cache directory
-            "cfg" | "config" => Self::set_proj_cfg(name, proj), // Set the configuration directory
-            "data" => Self::set_proj_data(name, proj), // Set the data directory
-            "local-data" | "local_data" => Self::set_proj_local_data(name, proj), // Set the local data directory
-            "local-cfg" | "local_cfg" | "local_config" => {
-                proj.and_then(|x| Self::into_os_cow(x.config_local_dir()))
+            "path" => proj_path(), // Set the project path
+            "cache" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::cache_dir,
+                &["/", "data", "data", name, "cache"],
+            ),
+            "cfg" | "config" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::config_dir,
+                &["/", "data", "data", name, "files"],
+            ),
+            "data" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::data_dir,
+                &["/", "data", "data", name],
+            ),
+            "local-data" | "local_data" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::data_local_dir,
+                &[Self::AND_SD, "Android", "data", name],
+            ),
+            "local-cfg" | "local_cfg" | "local_config" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::config_local_dir,
+                &[Self::AND_SD, "Android", "data", name, "files"],
+            ),
+            "pref" | "preference" => Self::set_proj_dir(
+                proj,
+                ProjectDirs::preference_dir,
+                &["/", "data", "data", name, "files"],
+            ),
+            "runtime" => proj.and_then(|x| and_then_cow(x.runtime_dir())),
+            "state" => proj.and_then(|x| and_then_cow(x.state_dir())),
+            "cli-data" | "cli_data" => {
+                proj.and_then(|p| Self::into_os_cow(p.data_local_dir()))
             }
-            "pref" | "preference" => {
-                proj.and_then(|x| Self::into_os_cow(x.preference_dir())) // Set the preference directory
+            "cli-cfg" | "cli_cfg" | "cli_config" => {
+                proj.and_then(|p| Self::into_os_cow(p.config_local_dir()))
             }
-            "runtime" => proj.and_then(|x| and_then_cow(x.runtime_dir())), // Set the runtime directory
-            "state" => proj.and_then(|x| and_then_cow(x.state_dir())), // Set the state directory
+            "cli-cache" | "cli_cache" => {
+                proj.and_then(|p| Self::into_os_cow(p.cache_dir()))
+            }
+            #[cfg(windows)]
+            "local-low" | "local_low" => {
+                let opt = BaseDirs::new().and_then(|p| {
+                    proj_path().map(|x| {
+                        p.data_local_dir()
+                            .join("LocalLow")
+                            .join(x)
+                    })
+                });
+                opt.and_then(Self::into_os_cow)
+            }
             _ => None, // If an unknown directory is requested, return None
         }
     }
@@ -253,7 +261,7 @@ mod tests {
     #[test]
     fn test_proj_dir() {
         let path = EnvPath::from([
-            "$project(me. tmm. store-demo): cfg  runtime ??  (    me. tmm. wasm-module  )： data ?? state ? cfg ?",
+            "$project(me. tmm. store-demo): cfg ? runtime ??  (    me. tmm. wasm-module  )： data ?? state ? cfg ?",
         ])
         .de();
         dbg!(path.display());
@@ -262,7 +270,7 @@ mod tests {
     #[test]
     fn test_proj_dir_question_mark() {
         let path = EnvPath::from([
-            "$project(me. tmm. store-demo): cfg  runtime ？？  (    me. tmm. wasm-module  )： data ？？ state ？？ cfg",
+            "$project(me. tmm. store-demo): local-cfg ? runtime ？？  (    me. tmm. wasm-module  )： data ？？ state ？？ cfg",
         ])
         .de();
         dbg!(path.display());
