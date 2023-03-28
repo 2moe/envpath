@@ -1,3 +1,5 @@
+mod from;
+
 use crate::OsCow;
 use std::{
     borrow::Cow,
@@ -7,100 +9,13 @@ use std::{
 
 pub(crate) type EnvPathRaw = Vec<String>;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct EnvPath {
     pub(crate) raw: EnvPathRaw,
     pub(crate) path: Option<PathBuf>,
 }
 
-mod from;
-
 impl EnvPath {
-    /// Create a new instance of `EnvPath` from `Vec<S>`.
-    ///
-    /// Note: This function automatically converts the raw, and modifies the converted value to the path within the structure.
-    /// If you just want to serialize it to the configuration, not deserialize cfg to it, please use `from()`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use envpath::EnvPath;
-    ///
-    /// let path = EnvPath::new(vec![
-    ///     "$env: home",
-    ///     ".local",
-    ///     "share",
-    ///     "$const: pkg",
-    ///     "$const: ver"
-    /// ]);
-    ///
-    /// dbg!(path.display(), path.exists());
-    /// ```
-    pub fn new<S, V>(raw: V) -> Self
-    where
-        S: Into<String>,
-        V: IntoIterator<Item = S>,
-    {
-        Self {
-            raw: Self::new_raw(raw),
-            path: None,
-        }
-        .de()
-    }
-
-    pub(crate) fn new_raw<S, V>(raw: V) -> EnvPathRaw
-    where
-        S: Into<String>,
-        V: IntoIterator<Item = S>,
-    {
-        raw.into_iter()
-            .map(|x| x.into())
-            .collect()
-    }
-
-    /// Converts from `&[&str]` type to raw, then converts raw to path, and then returns a new instance of EnvPath.
-    ///
-    /// | Methods                 | Similarities          | Differences               |
-    /// | ----------------------- | --------------------- | ------------------------- |
-    /// | create_from_str_slice() |                       | Auto convert raw to path  |
-    /// | from_str_slice()        | Create a New Instance | Manually                  |
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use envpath::EnvPath;
-    /// let v = EnvPath::create_from_str_slice(&["$env:home"]);
-    /// dbg!(v.display(), v.exists());
-    /// ```
-    pub fn create_from_str_slice(raw: &[&str]) -> Self {
-        Self::from_str_slice(raw).de()
-    }
-
-    /// Converts from `&[&str]` type to raw, then returns a new instance of EnvPath.
-    ///
-    /// Since `EnvPath` implements `From Trait`, you can use `EnvPath::from()` instead of `EnvPath::from_str_slice()`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use envpath::EnvPath;
-    /// let v1 = EnvPath::from(&["$env:home"]);
-    /// assert_eq!(v1.get_raw(), &["$env:home"]);
-    ///
-    /// let v2 = EnvPath::from_str_slice(&["$env:home"]);
-    ///
-    /// assert_eq!(v2.get_raw(), &["$env:home"]);
-    /// ```
-    pub fn from_str_slice(raw: &[&str]) -> Self {
-        Self {
-            raw: Self::new_raw(
-                raw.iter()
-                    .map(ToString::to_string),
-            ),
-            path: None,
-        }
-    }
-
     /// Get a reference to the raw sequence of strings.
     ///
     /// # Examples
