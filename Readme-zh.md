@@ -349,6 +349,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | family        |              | `consts::FAMILY`        | unix, windows           |
 | exe_suffix    |              | `consts::EXE_SUFFIX`    | `.exe`, `.nexe`         |
 | exe_extension |              | `consts::EXE_EXTENSION` | exe                     |
+| empty         |              |                         | ""                      |
 
 下面的表格是 `$const: deb-arch` 可能会输出的值。
 
@@ -404,6 +405,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
+| empty      |              | ""                                       |
 
 first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 若有 PATH 为 `/usr/local/bin:/usr/bin`，
@@ -452,6 +454,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-cfg    | cli_config   | `$xdg_config_home`    |
 | cli-cache  | cli_cache    | `$xdg_cache_home`     |
 | sd         |              | /storage/self/primary |
+| empty      |              | ""                    |
 
 #### Windows
 
@@ -493,6 +496,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | program-data             | program_data             | `$ProgramData`: (`C:\ProgramData`)                                  |
 | microsoft                |                          | `$home\AppData\Local\Roaming\Microsoft`                             |
 | local-low                | local_low                | `$home\AppData\LocalLow`                                            |
+| empty                    |                          | ""                                                                  |
 
 #### macOS
 
@@ -524,6 +528,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |
+| empty      |              | ""                                  |
 
 ### project
 
@@ -550,6 +555,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-data   | cli_data     | `$xdg_data_home/$proj_path`                            |
 | cli-cfg    | cli_config   | `$xdg_config_home/$proj_path`                          |
 | cli-cache  | cli_cache    | `$xdg_cache_home/$proj_path`                           |
+| empty      |              | ""                                                     |
 
 #### Android
 
@@ -571,6 +577,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-data   | cli_data     | `$xdg_data_home/ff`                 |
 | cli-cfg    | cli_config   | `$xdg_config_home/ff`               |
 | cli-cache  | cli_cache    | `$xdg_cache_home/ff`                |
+| empty      |              | ""                                  |
 
 #### Windows
 
@@ -587,6 +594,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-cfg    | cli_config   | `$home\AppData\Local\moz\ff\config`   |
 | cli-cache  | cli_cache    | `$home\AppData\Local\moz\ff\cache`    |
 | local-low  | local_low    | `$home\AppData\LocalLow\moz\ff`       |
+| empty      |              | ""                                    |
 
 #### macOS
 
@@ -602,6 +610,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cli-data   | cli_data     | `$home/Library/Application Support/org.moz.ff` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support/org.moz.ff` |
 | cli-cache  | cli_cache    | `$home/Library/Caches/org.moz.ff`              |
+| empty      |              | ""                                             |
 
 #### project 中的 "??"
 

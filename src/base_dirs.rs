@@ -206,6 +206,8 @@ impl EnvPath {
                 .or_else(|| Self::os_cow(r#"C:\ProgramData"#)),
             #[cfg(windows)]
             "microsoft" => into_cow(data_dir().map(|x| x.join("Microsoft"))),
+            "empty" => Self::os_cow(""),
+            
             _ => None,
         }
     }

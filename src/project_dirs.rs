@@ -249,6 +249,7 @@ impl EnvPath {
                 });
                 opt.and_then(Self::into_os_cow)
             }
+            "empty" => Self::os_cow(""),
             _ => None, // If an unknown directory is requested, return None
         }
     }

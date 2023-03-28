@@ -26,6 +26,7 @@ impl EnvPath {
             "family" => as_cow(FAMILY),
             "exe_suffix" => as_cow(EXE_SUFFIX),
             "exe_extension" => as_cow(EXE_EXTENSION),
+            "empty" => Self::os_cow(""),
             _ => None,
         }
     }

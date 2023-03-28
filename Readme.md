@@ -346,6 +346,7 @@ Use `$const:name` (such as `$const:arch`) or `$const:alias` (e.g. `$const:archit
 | family        |              | `consts::FAMILY`        | unix, windows           |
 | exe_suffix    |              | `consts::EXE_SUFFIX`    | `.exe`, `.nexe`         |
 | exe_extension |              | `consts::EXE_EXTENSION` | exe                     |
+| empty         |              |                         | ""                      |
 
 The following table shows the possible output values for `$const:deb-arch`:
 
@@ -401,6 +402,7 @@ Many of these contents are obtained from [dirs](https://docs.rs/dirs/latest/dirs
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
+| empty      |              | ""                                       |
 
 `first_path` refers to the first `$PATH` variable, while `last_path` refers to the last one. If PATH is `/usr/local/bin:/usr/bin`, then `/usr/local/bin` is the first_path, and `/usr/bin` is the last_path.
 
@@ -447,6 +449,7 @@ For items not listed, use Linux data.
 | cli-cfg    | cli_config   | `$xdg_config_home`    |
 | cli-cache  | cli_cache    | `$xdg_cache_home`     |
 | sd         |              | /storage/self/primary |
+| empty      |              | ""                    |
 
 #### Windows
 
@@ -488,6 +491,7 @@ For items not listed, use Linux data.
 | program-data             | program_data             | `$ProgramData`: (`C:\ProgramData`)                                  |
 | microsoft                |                          | `$home\AppData\Local\Roaming\Microsoft`                             |
 | local-low                | local_low                | `$home\AppData\LocalLow`                                            |
+| empty                    |                          | ""                                                                  |
 
 #### macOS
 
@@ -519,6 +523,7 @@ For items not listed, use Linux data.
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |
+| empty      |              | ""                                  |
 
 ### project
 
@@ -546,6 +551,7 @@ Assuming the project is `(org.moz.ff)`, here's an example:
 | cli-data   | cli_data     | `$xdg_data_home/$proj_path`                            |
 | cli-cfg    | cli_config   | `$xdg_config_home/$proj_path`                          |
 | cli-cache  | cli_cache    | `$xdg_cache_home/$proj_path`                           |
+| empty      |              | ""                                                     |
 
 #### Android
 
@@ -567,6 +573,7 @@ Assuming the project is `(org.moz.ff)`, here's an example:
 | cli-data   | cli_data     | `$xdg_data_home/ff`                 |
 | cli-cfg    | cli_config   | `$xdg_config_home/ff`               |
 | cli-cache  | cli_cache    | `$xdg_cache_home/ff`                |
+| empty      |              | ""                                  |
 
 #### Windows
 
@@ -583,6 +590,7 @@ Assuming the project is `(org.moz.ff)`, here's an example:
 | cli-cfg    | cli_config   | `$home\AppData\Local\moz\ff\config`   |
 | cli-cache  | cli_cache    | `$home\AppData\Local\moz\ff\cache`    |
 | local-low  | local_low    | `$home\AppData\LocalLow\moz\ff`       |
+| empty      |              | ""                                    |
 
 #### macOS
 
@@ -598,6 +606,7 @@ Assuming the project is `(org.moz.ff)`, here's an example:
 | cli-data   | cli_data     | `$home/Library/Application Support/org.moz.ff` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support/org.moz.ff` |
 | cli-cache  | cli_cache    | `$home/Library/Caches/org.moz.ff`              |
+| empty      |              | ""                                             |
 
 #### "??" in project
 
