@@ -149,7 +149,7 @@ impl EnvPath {
         Self::from_str_slice(raw).de()
     }
 
-    /// Converts from `&[&str]` type to raw, then returns a new instance of EnvPath.
+    /// Converts from `&[&str]` (`&[AsRef<str>]`) type to raw, then returns a new instance of EnvPath.
     ///
     /// Since `EnvPath` implements `From Trait`, you can use `EnvPath::from()` instead of `EnvPath::from_str_slice()`
     ///
@@ -164,11 +164,11 @@ impl EnvPath {
     ///
     /// assert_eq!(v2.get_raw(), &["$env:home"]);
     /// ```
-    pub fn from_str_slice(raw: &[&str]) -> Self {
+    pub fn from_str_slice<S: AsRef<str>>(raw: &[S]) -> Self {
         Self {
             raw: Self::new_raw(
                 raw.iter()
-                    .map(ToString::to_string),
+                    .map(|x| x.as_ref().to_string()),
             ),
             path: None,
         }
