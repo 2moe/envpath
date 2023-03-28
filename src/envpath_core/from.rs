@@ -131,7 +131,7 @@ impl EnvPath {
             .collect()
     }
 
-    /// Converts from `&[&str]` type to raw, then converts raw to path, and then returns a new instance of EnvPath.
+    /// Converts from `&[&str]` (`&[AsRef<str>]`) type to raw, then converts raw to path, and then returns a new instance of EnvPath.
     ///
     /// | Methods                 | Similarities          | Differences               |
     /// | ----------------------- | --------------------- | ------------------------- |
@@ -145,7 +145,7 @@ impl EnvPath {
     /// let v = EnvPath::create_from_str_slice(&["$env:home"]);
     /// dbg!(v.display(), v.exists());
     /// ```
-    pub fn create_from_str_slice(raw: &[&str]) -> Self {
+    pub fn create_from_str_slice<S: AsRef<str>>(raw: &[S]) -> Self {
         Self::from_str_slice(raw).de()
     }
 
