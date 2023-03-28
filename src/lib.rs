@@ -113,7 +113,7 @@ Now let's try serialization.
             dir: Option<EnvPath>,
         }
 
-        let dir = Some(EnvPath::from_str_iter(&[
+        let dir = Some(EnvPath::from(&[
             "$env: user ?? userprofile ?? home",
         ]));
 
@@ -590,9 +590,7 @@ mod tests {
             dir: Option<EnvPath>,
         }
 
-        let dir = Some(EnvPath::from_str_iter(&[
-            "$env: user ?? userprofile ?? home",
-        ]));
+        let dir = Some(EnvPath::from(&["$env: user ?? userprofile ?? home"]));
 
         let ron_str = ron::to_string(&Cfg { dir }).expect("Failed to ser");
         std::fs::write("test.ron", ron_str)

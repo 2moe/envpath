@@ -217,7 +217,7 @@ cargo add ron
             dir: Option<EnvPath>,
         }
 
-        let dir = Some(EnvPath::from_str_iter(&[
+        let dir = Some(EnvPath::from(&[
             "$env: user ?? userprofile ?? home",
         ]));
 
