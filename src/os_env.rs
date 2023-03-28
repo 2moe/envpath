@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn test_complex_envs() {
         use crate::EnvPath;
-        let s = EnvPath::create_from_str_slice(&[
+        let s = EnvPath::create_from_str_iter([
             "$env       : user ?? aaa ? bbb ? ccc ? xdg_data_home ?? home",
             "$const   :    pkg",
             "$env   :      this_is-a-strange-env ?? to_avoid_conflicts_with_folder_names",

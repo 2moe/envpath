@@ -23,7 +23,7 @@ impl<'a, const N: usize> From<&'a [&'a str; N]> for EnvPath {
     /// dbg!(v.display());
     /// ```
     fn from(raw: &'a [&'a str; N]) -> Self {
-        Self::from_str_slice(raw)
+        Self::from_str_iter(raw)
     }
 }
 
@@ -38,7 +38,10 @@ impl<'a, const N: usize> From<[&'a str; N]> for EnvPath {
     ///dbg!(path.de().display());
     /// ```
     fn from(raw: [&'a str; N]) -> Self {
-        Self::from_str_slice(&raw)
+        Self {
+            raw: Self::new_raw(raw),
+            path: None,
+        }
     }
 }
 
@@ -65,12 +68,7 @@ impl<S: Into<String>> From<Vec<S>> for EnvPath {
 impl<'a, T: AsRef<str>> From<&'a [T]> for EnvPath {
     /// The elements of an array slice can be of a type that implements `AsRef<str>`.
     fn from(raw: &'a [T]) -> Self {
-        let raw = Self::new_raw(
-            raw.iter()
-                .map(|s| s.as_ref().to_string()),
-        );
-
-        Self { raw, path: None }
+        Self::from_str_iter(raw)
     }
 }
 
@@ -84,7 +82,7 @@ impl<'a> From<&'a Vec<&'a str>> for EnvPath {
     /// assert_eq!(path.get_raw(), &["$env:home"]);
     /// ```
     fn from(raw: &'a Vec<&'a str>) -> Self {
-        Self::from_str_slice(raw)
+        Self::from_str_iter(raw)
     }
 }
 
@@ -131,27 +129,27 @@ impl EnvPath {
             .collect()
     }
 
-    /// Converts from `&[&str]` (`&[AsRef<str>]`) type to raw, then converts raw to path, and then returns a new instance of EnvPath.
+    /// Converts from `&[&str]`/`[&str]` (`IntoIterator<Item = AsRef<str>>`) type to raw, then converts raw to path, and then returns a new instance of EnvPath.
     ///
     /// | Methods                 | Similarities          | Differences               |
     /// | ----------------------- | --------------------- | ------------------------- |
-    /// | create_from_str_slice() |                       | Auto convert raw to path  |
-    /// | from_str_slice()        | Create a New Instance | Manually                  |
+    /// | create_from_str_iter() |                       | Auto convert raw to path  |
+    /// | from_str_iter()        | Create a New Instance | Manually                  |
     ///
     /// # Examples
     ///
     /// ```
     /// use envpath::EnvPath;
-    /// let v = EnvPath::create_from_str_slice(&["$env:home"]);
+    /// let v = EnvPath::create_from_str_iter(&["$env:home"]);
     /// dbg!(v.display(), v.exists());
     /// ```
-    pub fn create_from_str_slice<S: AsRef<str>>(raw: &[S]) -> Self {
-        Self::from_str_slice(raw).de()
+    pub fn create_from_str_iter<S: AsRef<str>, I: IntoIterator<Item = S>>(
+        raw: I,
+    ) -> Self {
+        Self::from_str_iter(raw).de()
     }
 
-    /// Converts from `&[&str]` (`&[AsRef<str>]`) type to raw, then returns a new instance of EnvPath.
-    ///
-    /// Since `EnvPath` implements `From Trait`, you can use `EnvPath::from()` instead of `EnvPath::from_str_slice()`
+    /// Converts from `&[&str]`/`[&str]` (`IntoIterator<Item = AsRef<str>>`) type to raw, then returns a new instance of EnvPath.
     ///
     /// # Examples
     ///
@@ -162,14 +160,14 @@ impl EnvPath {
     /// let v1 = EnvPath::from(&home);
     /// assert_eq!(v1.get_raw(), &home);
     ///
-    /// let v2 = EnvPath::from_str_slice(&home);
+    /// let v2 = EnvPath::from_str_iter(&home);
     ///
     /// assert_eq!(v2.get_raw(), &home);
     /// ```
-    pub fn from_str_slice<S: AsRef<str>>(raw: &[S]) -> Self {
+    pub fn from_str_iter<S: AsRef<str>, I: IntoIterator<Item = S>>(raw: I) -> Self {
         Self {
             raw: Self::new_raw(
-                raw.iter()
+                raw.into_iter()
                     .map(|x| x.as_ref().to_string()),
             ),
             path: None,

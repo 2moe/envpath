@@ -216,7 +216,7 @@ Now let's try serialization.
             dir: Option<EnvPath>,
         }
 
-        let dir = Some(EnvPath::from_str_slice(&[
+        let dir = Some(EnvPath::from_str_iter(&[
             "$env: user ?? userprofile ?? home",
         ]));
 

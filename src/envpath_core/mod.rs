@@ -216,8 +216,15 @@ mod tests {
         let _v1 = EnvPath::from(vec!["$env:home"]);
         let _v2 = EnvPath::from(&["$dir: home"]);
 
-        let v3 = vec!["$env:home"];
-        let path = EnvPath::from(&v3);
+        let v3 = ["$env:home".to_owned()];
+        let path = EnvPath::new(v3.as_slice());
         assert_eq!(path.get_raw(), &["$env:home"]);
+        let v4 = v3.to_vec();
+        dbg!(EnvPath::from_str_iter(&v4));
+        dbg!(EnvPath::from_str_iter(v4));
+        dbg!(EnvPath::from_str_iter(&v3));
+
+        let v5 = ["$env: user"];
+        dbg!(EnvPath::from_str_iter(v5));
     }
 }
