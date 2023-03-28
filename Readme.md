@@ -569,7 +569,7 @@ Assuming the project is `(org.moz.ff)`, here's an example:
 | local-cfg  | local_config | `$sd/Android/data/org.moz.ff/files` |
 | pref       | preference   | /data/data/org.moz.ff/files         |
 | runtime    |              | `$xdg_runtime_dir/ff`               |
-| state      |              | `$xdg_data_home/ff`                 |
+| state      |              | `$xdg_state_home/ff`                |
 | cli-data   | cli_data     | `$xdg_data_home/ff`                 |
 | cli-cfg    | cli_config   | `$xdg_config_home/ff`               |
 | cli-cache  | cli_cache    | `$xdg_cache_home/ff`                |
