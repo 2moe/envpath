@@ -613,7 +613,15 @@ Assuming there are three projects:
 
 ---
 
-The first example is: `$proj (org. moz. ff): runtime? data?? state? (com. gg. cr): cfg?? cache? (com. ms. eg): local-data? data`
+The first example is:
+
+```rs
+["
+    $proj (org . moz . ff ): runtime ? data ?? state ?
+    (com . gg . cr): cfg ?? cache ?
+    (com . ms . eg): local-data ? data
+"]
+```
 
 Let's start parsing the runtime of the ff project, unfortunately, it does not exist.
 
@@ -637,7 +645,15 @@ The final return value is the cfg directory of the cr project!
 
 ---
 
-The second example is: `$proj (org . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
+The second example is:
+
+```rs
+["
+    $proj (org . moz . ff )：runtime ？ data ？？ state ？
+    (com . gg . cr)： cfg ？？ cache ？
+    (com . ms . eg)： local-data ？ data
+"]
+```
 
 Q: Why don't I see any difference from the first example?
 

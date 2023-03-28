@@ -275,7 +275,12 @@ mod tests {
         .de();
         dbg!(path.display());
 
-        let path2 = EnvPath::from(["$proj (com . moz . ff )：runtimes ？ data ？？ state ？？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data"]).de();
+        let path2 = EnvPath::from(["
+            $proj (com . moz . ff )：runtimes ？ data ？？ state ？？ 
+            (com . gg . cr)： cfg ？？ cache ？ 
+            (com . ms . eg)： local-data ？ data
+            "])
+        .de();
         dbg!(path2.display());
     }
 }

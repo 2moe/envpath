@@ -614,7 +614,15 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 - (com. gg. cr)
 - (com . ms . eg)
 
-第一个例子为： `$proj (org . moz . ff ): runtime ? data ?? state ? (com . gg . cr): cfg ?? cache ? (com . ms . eg): local-data ? data`
+第一个例子为：
+
+```rs
+["
+    $proj (org . moz . ff ): runtime ? data ?? state ?
+    (com . gg . cr): cfg ?? cache ?
+    (com . ms . eg): local-data ? data
+"]
+```
 
 我们开始解析 ff 项目的 runtime, 很不幸，它不存在。  
 我们接着解析 data！太好了，我们发现它的值是存在的。  
@@ -631,7 +639,15 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 cr 的 cfg 不仅值存在，路径也是存在的。  
 最终的胜者是 cr 家的 cfg，尽管如此，但她却不怎么开心的样子。在离开前，她嘴角边还嘟喃道：“明明只是个解析器，竟然敢这么嚣张，哼！”
 
-第二个例子为： `$proj (org . moz . ff )：runtime ？ data ？？ state ？ (com . gg . cr)： cfg ？？ cache ？ (com . ms . eg)： local-data ？ data`
+第二个例子为：
+
+```rs
+["
+    $proj (org . moz . ff )：runtime ？ data ？？ state ？
+    (com . gg . cr)： cfg ？？ cache ？
+    (com . ms . eg)： local-data ？ data
+"]
+```
 
 Q: 咦？我怎么没看出来，这与第一个例子有何不同？  
 A: 届时，汝自会知晓。  
