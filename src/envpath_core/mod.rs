@@ -29,7 +29,13 @@ impl EnvPath {
     pub fn get_raw(&self) -> &[String] {
         self.raw.as_ref()
     }
-    //
+
+    /// `get_raw_mut` is a public method of the `EnvPath` struct that returns a mutable reference to the raw sequence of strings.
+    ///
+    /// This method can be used to modify the raw sequence and update the `EnvPath` object accordingly. It takes no arguments and returns a mutable reference to an `EnvPathRaw` object.
+    pub fn get_raw_mut(&mut self) -> &mut EnvPathRaw {
+        &mut self.raw
+    }
 
     /// Set the raw sequence of strings.
     ///

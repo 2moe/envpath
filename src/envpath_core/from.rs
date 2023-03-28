@@ -157,12 +157,14 @@ impl EnvPath {
     ///
     /// ```
     /// use envpath::EnvPath;
-    /// let v1 = EnvPath::from(&["$env:home"]);
-    /// assert_eq!(v1.get_raw(), &["$env:home"]);
     ///
-    /// let v2 = EnvPath::from_str_slice(&["$env:home"]);
+    /// let home = ["$env:home"];
+    /// let v1 = EnvPath::from(&home);
+    /// assert_eq!(v1.get_raw(), &home);
     ///
-    /// assert_eq!(v2.get_raw(), &["$env:home"]);
+    /// let v2 = EnvPath::from_str_slice(&home);
+    ///
+    /// assert_eq!(v2.get_raw(), &home);
     /// ```
     pub fn from_str_slice<S: AsRef<str>>(raw: &[S]) -> Self {
         Self {
