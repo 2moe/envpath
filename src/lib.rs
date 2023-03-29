@@ -222,7 +222,7 @@
 //! | runtime                  |                          | None                                                                |
 //! | state                    |                          | None                                                                |
 //! | video                    |                          | `$home\Videos`                                                      |
-//! | music                    | audio                    | `$home\music`                                                       |
+//! | music                    | audio                    | `$home\Music`                                                       |
 //! | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 //! | tmp                      |                          | `$tmpdir`                                                           |
 //! | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                        |

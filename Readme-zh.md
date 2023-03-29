@@ -547,7 +547,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | runtime                  |                          | None                                                                |
 | state                    |                          | None                                                                |
 | video                    |                          | `$home\Videos`                                                      |
-| music                    | audio                    | `$home\music`                                                       |
+| music                    | audio                    | `$home\Music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 | tmp                      |                          | `$tmpdir`                                                           |
 | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                       |
