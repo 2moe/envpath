@@ -537,7 +537,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | common-program-files     | common_program_files     | `$CommonProgramFiles`: (`C:\Program Files\Common Files`)            |
 | common-program-files-x86 | common_program_files_x86 | `$CommonProgramFiles(x86)`: (`C:\Program Files (x86)\Common Files`) |
 | program-data             | program_data             | `$ProgramData`: (`C:\ProgramData`)                                  |
-| microsoft                |                          | `$home\AppData\Local\Roaming\Microsoft`                             |
+| microsoft                |                          | `$home\AppData\Roaming\Microsoft`                                   |
 | local-low                | local_low                | `$home\AppData\LocalLow`                                            |
 | empty                    |                          | ""                                                                  |
 
