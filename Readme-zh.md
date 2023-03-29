@@ -373,11 +373,11 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 ### remix
 
-| name                      | alias       | example                          |
-| ------------------------- | ----------- | -------------------------------- |
-| `env * [env_name]`        | `env*[env]` | `env * HOME`                     |
-| `const * [const]`         |             | `const * arch`                   |
-| `dir * [dir]`             |             | `dir * download`                 |
+| name                        | alias       | example                          |
+| --------------------------- | ----------- | -------------------------------- |
+| `env * [env_name]`          | `env*[env]` | `env * HOME`                     |
+| `const * [const]`           |             | `const * arch`                   |
+| `dir * [dir]`               |             | `dir * download`                 |
 | `proj * (project): [ident]` |             | `proj * (com. xy.z): local-data` |
 
 #### example
@@ -475,7 +475,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | cfg        | config       |                       |
 | data       |              |                       |
 | local-data | local_data   | `$sd/Android/data`    |
-| local-cfg  | local_config |                       |
+| local-cfg  | local_config | `$sd/Android/data`    |
 | desktop    |              |                       |
 | doc        | document     | `$sd/Documents`       |
 | dl         | download     | `$sd/Download`        |

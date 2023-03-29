@@ -149,7 +149,8 @@ impl EnvPath {
                 Self::set_dir(data_local_dir, "Android/data")
             }
             "local-cfg" | "local_cfg" | "local_config" => {
-                into_cow(config_local_dir())
+                // into_cow(config_local_dir())
+                Self::set_dir(config_local_dir, "Android/data")
             }
             "desktop" => into_cow(desktop_dir()),
             "doc" | "document" | "documentation" => {

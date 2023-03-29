@@ -370,11 +370,11 @@ For example, if you compile a package for `armv7`, the value obtained by `$const
 
 ### remix
 
-| name                      | alias       | example                          |
-| ------------------------- | ----------- | -------------------------------- |
-| `env * [env_name]`        | `env*[env]` | `env * HOME`                     |
-| `const * [const]`         |             | `const * arch`                   |
-| `dir * [dir]`             |             | `dir * download`                 |
+| name                        | alias       | example                          |
+| --------------------------- | ----------- | -------------------------------- |
+| `env * [env_name]`          | `env*[env]` | `env * HOME`                     |
+| `const * [const]`           |             | `const * arch`                   |
+| `dir * [dir]`               |             | `dir * download`                 |
 | `proj * (project): [ident]` |             | `proj * (com. xy.z): local-data` |
 
 #### example
@@ -470,7 +470,7 @@ For items not listed, use Linux data.
 | cfg        | config       |                       |
 | data       |              |                       |
 | local-data | local_data   | `$sd/Android/data`    |
-| local-cfg  | local_config |                       |
+| local-cfg  | local_config | `$sd/Android/data`    |
 | desktop    |              |                       |
 | doc        | document     | `$sd/Documents`       |
 | dl         | download     | `$sd/Download`        |
