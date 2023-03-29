@@ -148,7 +148,7 @@
 //!
 //! ```rs
 //! ["
-//!     $const: empty ?
+//!     $const: empty ??
 //!         env * home ?
 //!         env * HOME
 //! ",

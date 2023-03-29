@@ -384,7 +384,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 ```rs
 ["
-    $const: empty ?
+    $const: empty ??
         env * home ?
         env * HOME
 ",

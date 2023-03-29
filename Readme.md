@@ -381,7 +381,7 @@ For example, if you compile a package for `armv7`, the value obtained by `$const
 
 ```rs
 ["
-    $const: empty ?
+    $const: empty ??
         env * home ?
         env * HOME
 ",
