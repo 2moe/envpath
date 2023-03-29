@@ -373,7 +373,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 ### val
 
-使用 `$val:name` (e.g. `$val: rand-16`) 来获取值。与 `$const:` 不同，`$val:` 的值是在运行时获取的，而不是编译时。
+使用 `$val:name` (e.g. `$val: rand-16`) 来获取值。与 `$const:` 不同，大部分 `$val:` 的值都是在运行时获取的，而不是编译时。
 
 | name           | example                           |
 | -------------- | --------------------------------- |
@@ -395,6 +395,7 @@ rand 用于获取 random(随机) 内容，目前仅支持字符串。
 | `const * [const]`           | `const * arch`                   |
 | `dir * [dir]`               | `dir * download`                 |
 | `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
+| `val * [val]`               | `val * rand-16`                  |
 
 #### example
 
