@@ -137,12 +137,12 @@
 //!
 //! ## remix
 //!
-//! | name                      | alias       | example                          |
-//! | ------------------------- | ----------- | -------------------------------- |
-//! | `env * [env_name]`        | `env*[env]` | `env * HOME`                     |
-//! | `const * [const]`         |             | `const * arch`                   |
-//! | `dir * [dir]`             |             | `dir * download`                 |
-//! | `proj * (project): [ident]` |             | `proj * (com. xy.z): local-data` |
+//! | expr                        | example                          |
+//! | --------------------------- | -------------------------------- |
+//! | `env * [env_name]`          | `env * HOME`                     |
+//! | `const * [const]`           | `const * arch`                   |
+//! | `dir * [dir]`               | `dir * download`                 |
+//! | `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
 //!
 //! ### example
 //!
