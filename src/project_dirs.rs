@@ -11,20 +11,17 @@ use directories::BaseDirs;
 #[cfg(target_os = "android")]
 use std::path::PathBuf;
 
-use std::{borrow::Cow, ops::ControlFlow, path::Path};
+use std::{borrow::Cow, io, ops::ControlFlow, path::Path};
 
 /// Implement additional methods for EnvPath when the "project-dirs" feature is enabled
 ///
 /// If you see a method(function) with a parameter name containing **_** prefix (e.g. **_name**) in some methods, do not delete it.
 /// This may be a platform-specific parameter, so to avoid the "unused variable" warning, I've added the "_" prefix.
-#[cfg(feature = "project-dirs")]
 impl EnvPath {
     // Method to extract project name information from a string
     pub(crate) fn get_project_name(c0: &str) -> Option<(&str, &str, Cow<str>)> {
         // Find the first and last occurrence of parentheses in the string
-        let (Some(start), Some(end)) = (c0.find('('), c0.rfind(')')) else {
-            return None
-        };
+        let (start, end) = (c0.find('(')?, c0.rfind(')')?);
 
         // Extract the content within the parentheses
         let content = &c0[start + 1..end];
@@ -63,6 +60,40 @@ impl EnvPath {
         }
     }
 
+    /// The function returns an `io::Result<ProjectDirs>`, which is created using the [ProjectDirs::from()](directories::ProjectDirs::from) method.
+    ///
+    /// Note: `directories::ProjectDirs` is different from `$proj` of EnvPath!
+    ///
+    /// | Parameter | Description                                                                           |
+    /// | --------- | ------------------------------------------------------------------------------------- |
+    /// | qual      | The qualifier of the project, which is a string reference.                            |
+    /// | org       | The organization responsible for the project, also as a string reference.             |
+    /// | app       | The name of the application associated with the project, again as a string reference. |
+    ///
+    /// Here's a table explaining the parts of the string "org.moz.ff" and what they represent:
+    ///
+    /// | Part | Abbreviation | Meaning     |
+    /// |------|-------------|--------------|
+    /// | org  | qual        | organization |
+    /// | moz  | org         | organization |
+    /// | ff   | app         | application  |
+    ///
+    pub fn new_project<Q, O, A>(qual: Q, org: O, app: A) -> io::Result<ProjectDirs>
+    where
+        Q: AsRef<str>,
+        O: AsRef<str>,
+        A: AsRef<str>,
+    {
+        ProjectDirs::from(qual.as_ref(), org.as_ref(), app.as_ref()).ok_or_else(
+            || {
+                io::Error::new(
+                    io::ErrorKind::Unsupported,
+                    "Cannot generate ProjectDirs for your platform.",
+                )
+            },
+        )
+    }
+
     // Method to set the project directory
     pub(crate) fn set_proj_dir<'a, F>(
         proj: Option<&ProjectDirs>,
@@ -89,7 +120,7 @@ impl EnvPath {
     /// If one of the two does not exist, the parsing continues. If neither `data` nor `local-data` has a value, then we're at the (com.x.y.z) project and continue parsing.
     fn parse_proj_dir_rules<'a>(
         first: &str,
-        remain: &str,
+        remain: &'a str,
         separator: char,
     ) -> ControlFlow<OsCow<'a>, OsCow<'a>> {
         use ControlFlow::{Break, Continue};
@@ -150,9 +181,8 @@ impl EnvPath {
 
         match Self::get_question_mark_separator(remain) {
             sep if sep == ' ' => {
-                let Some((name, proj)) = Self::set_proj_name_opt_tuple(first_chunk) else {
-                    return None
-                };
+                let (name, proj) = Self::set_proj_name_opt_tuple(first_chunk)?;
+
                 Self::match_proj_dirs(remain, &name, proj.as_ref())
             }
             sep => match Self::parse_proj_dir_rules(first_chunk, remain, sep) {
@@ -161,13 +191,12 @@ impl EnvPath {
         }
     }
 
-    fn set_proj_name_opt_tuple(
+    pub(crate) fn set_proj_name_opt_tuple(
         chunk: &str,
     ) -> Option<(String, Option<ProjectDirs>)> {
         // Extract the project name information from the first chunk
-        let Some((qual, org, app)) = Self::get_project_name(chunk) else {
-            return None // If the project name information cannot be extracted, return None
-        };
+        // If the project name information cannot be extracted, return None
+        let (qual, org, app) = Self::get_project_name(chunk)?;
 
         // Create a ProjectDirs object using the project name information
         let proj = ProjectDirs::from(qual, org, &app);
@@ -185,7 +214,7 @@ impl EnvPath {
 
     // Method to handle a project directory request
     pub(crate) fn match_proj_dirs<'a>(
-        ident: &str,
+        ident: &'a str,
         name: &str,
         proj: Option<&ProjectDirs>,
     ) -> OsCow<'a> {
@@ -250,7 +279,9 @@ impl EnvPath {
                 opt.and_then(Self::into_os_cow)
             }
             "empty" => Self::os_cow(""),
-            _ => None, // If an unknown directory is requested, return None
+            x if Self::starts_with_star_arr(x) => Self::find_map_single_star(x),
+            _ => None,
+            // If an unknown directory is requested, return None
         }
     }
 }
@@ -283,5 +314,20 @@ mod tests {
             "])
         .de();
         dbg!(path2.display());
+    }
+
+    #[test]
+    fn proj_env() {
+        let p = EnvPath::new(["$proj (org.x) : data ?? env * HOME"]);
+        dbg!(p.display());
+    }
+
+    #[test]
+    fn remix_proj_and_env() {
+        let p = EnvPath::new(["$env: user ?? proj * (com.xy.z):cfg ? HOME"]);
+        dbg!(p);
+
+        let p2 = EnvPath::new(["$proj * (org. a . b ): runtimes ? env * HOME"]);
+        dbg!(p2);
     }
 }

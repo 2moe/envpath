@@ -348,6 +348,8 @@ Use `$const:name` (such as `$const:arch`) or `$const:alias` (e.g. `$const:archit
 | exe_extension |              | `consts::EXE_EXTENSION` | exe                     |
 | empty         |              |                         | ""                      |
 
+#### deb-arch
+
 The following table shows the possible output values for `$const:deb-arch`:
 
 | Architecture                | deb_arch                                                                            |
@@ -365,6 +367,44 @@ The following table shows the possible output values for `$const:deb-arch`:
 | other                       | [consts::ARCH](https://doc.rust-lang.org/nightly/std/env/consts/constant.ARCH.html) |
 
 For example, if you compile a package for `armv7`, the value obtained by `$const:arch` would be `arm`, while `$const:deb-arch` could be `armhf`.
+
+### remix
+
+| name                      | alias       | example                          |
+| ------------------------- | ----------- | -------------------------------- |
+| `env * [env_name]`        | `env*[env]` | `env * HOME`                     |
+| `const * [const]`         |             | `const * arch`                   |
+| `dir * [dir]`             |             | `dir * download`                 |
+| `proj * (project): ident` |             | `proj * (com. xy.z): local-data` |
+
+For example,
+
+```rs
+["
+    $const: empty ?
+        env * home ?
+        env * HOME
+",
+    "test"
+]
+```
+
+`env*` can be used for fallback, but unlike `$env:`, it does not automatically convert lowercase letters to uppercase, and it does not automatically convert `-` to `_`.
+
+For example, `env * home` retrieves `$home`, not `$HOME`.
+
+> Note: If the `$env:` expression contains a `*`, the automatic conversion feature will also be disabled.
+
+The following syntax is currently supported:
+
+- `$const: exe_suffix ?   env * HOME ?   env * XDG_DATA_HOME ?   env * EXE_SUFFIX`
+- `$env: home ? xdg-data-home ? exe_suffix     const * exe_suffix`
+
+Not supported:
+
+- `$const: exe_suffix ? $env: home ? xdg-data-home ? exe_suffix`
+
+If it is supported, the parsing may become complicated and there could be confusion between `$env: exe_suffix` and `$const: exe_suffix`.
 
 ### base
 

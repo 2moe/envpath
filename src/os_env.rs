@@ -7,6 +7,7 @@ pub const FWQM: char = '\u{FF1F}';
 pub const HWQM: char = '\u{3F}';
 
 impl EnvPath {
+    pub(crate) const START_ARR: [&str; 4] = ["env", "dir", "const", "proj"];
     /// It's a function for parsing rules(e.g. `$env: user ? userprofile ?? home`).
     /// The `s` parameter in this function refers to all strings in the closed interval from **user** to **home**. Does not contain the `$env:`.
     ///
@@ -60,8 +61,78 @@ impl EnvPath {
         }
     }
 
+    /// This function is used to handle ident starting with `env =` or `env=`, and then resolve the environment variable to the right of `=`
+    ///
+    /// Assuming that the ident is `env = home`, it does not automatically convert `home` to `HOME`, but gets `$home` directly.
+    pub(crate) fn handle_star<'a>(s: &'a str, start: &str) -> OsCow<'a> {
+        match s
+            .trim_start_matches(start)
+            .trim()
+        {
+            x if x.starts_with('*') => {
+                let trimed = x.trim_start_matches('*').trim();
+                match start {
+                    "env" => Self::into_os_env(trimed),
+                    #[cfg(feature = "base-dirs")]
+                    "dir" => Self::match_base_dirs(trimed),
+                    #[cfg(feature = "project-dirs")]
+                    "proj" => match Self::get_chunks(trimed) {
+                        c if matches!(c.len(), 0 | 1) => None,
+                        c => match Self::set_proj_name_opt_tuple(c[0]) {
+                            Some((name, proj)) => {
+                                Self::match_proj_dirs(c[1], &name, proj.as_ref())
+                            }
+                            _ => None,
+                        },
+                    },
+                    #[cfg(feature = "const-dirs")]
+                    "const" => Self::match_const_dirs(trimed),
+                    _ => None,
+                }
+            }
+            _ => None,
+        }
+    }
+
+    pub(crate) fn starts_with_star_arr(x: &str) -> bool {
+        let mut iter = x.splitn(2, '*');
+
+        match (iter.next(), iter.next()) {
+            (Some(start), Some(_)) => match start.trim() {
+                "env" => true,
+                #[cfg(feature = "base-dirs")]
+                "dir" => true,
+                #[cfg(feature = "project-dirs")]
+                "proj" => true,
+                #[cfg(feature = "const-dirs")]
+                "const" => true,
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
+    pub(crate) fn find_map_single_star(x: &str) -> OsCow {
+        Self::START_ARR
+            .iter()
+            // .inspect(|x| println!("in: {x}"))
+            .filter(|&start| x.starts_with(start))
+            // .inspect(|x| println!("out: {x}"))
+            .find_map(|start| Self::handle_star(x, start))
+    }
+
     pub(crate) fn into_os_env(x: &str) -> OsCow {
         var_os(x).map(Cow::from)
+    }
+
+    fn match_os_env(ident: &str) -> OsCow {
+        match ident {
+            x if Self::starts_with_star_arr(x) => {
+                // dbg!("find start", x);
+                Self::find_map_single_star(x)
+            }
+            x => Self::into_os_env(x),
+        }
     }
 
     /// For simple rules, get the environment variables directly.
@@ -71,7 +142,7 @@ impl EnvPath {
 
         match Self::get_question_mark_separator(ident) {
             sep if sep == ' ' => var_os(ident).and_then(Self::into_os_cow),
-            sep => match Self::parse_dir_rules(ident, Self::into_os_env, sep) {
+            sep => match Self::parse_dir_rules(ident, Self::match_os_env, sep) {
                 Break(x) | Continue(x) => x, // _ => None,
             },
         }

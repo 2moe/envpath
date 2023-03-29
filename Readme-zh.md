@@ -351,6 +351,8 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | exe_extension |              | `consts::EXE_EXTENSION` | exe                     |
 | empty         |              |                         | ""                      |
 
+#### deb-arch
+
 下面的表格是 `$const: deb-arch` 可能会输出的值。
 
 比如说，您编译了一个 `armv7` 的软件包， 用 `$const:  arch` 得到的值是 arm, 而 `$const:  deb-arch` 可能是 armhf。
@@ -368,6 +370,44 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | powerpc64 (endian = little) | ppc64el                                                                             |
 | x86 (i586/i686)             | i386                                                                                |
 | other                       | [consts::ARCH](https://doc.rust-lang.org/nightly/std/env/consts/constant.ARCH.html) |
+
+### remix
+
+| name                      | alias       | example                          |
+| ------------------------- | ----------- | -------------------------------- |
+| `env * [env_name]`        | `env*[env]` | `env * HOME`                     |
+| `const * [const]`         |             | `const * arch`                   |
+| `dir * [dir]`             |             | `dir * download`                 |
+| `proj * (project): ident` |             | `proj * (com. xy.z): local-data` |
+
+举个例子：
+
+```rs
+["
+    $const: empty ?
+        env * home ?
+        env * HOME
+",
+    "test"
+]
+```
+
+`env*` 可用于 fallback, 但与 `$env` 不同，它不会自动将小写字母全部转换为大写，也不会将 `-` 转换为 `_`。
+
+例如： `env * home` 获取的是 `$home` , 而不是 `$HOME`。
+
+> 注： 如果 `$env` 式子中包含 `*`， 那么自动转换功能也会被禁用。
+
+目前支持的语法：
+
+- `$const: exe_suffix ?   env * HOME ?   env * XDG_DATA_HOME ?   env * EXE_SUFFIX`
+- `$env: home ? xdg-data-home ? exe_suffix ?    const * exe_suffix`
+
+不支持:
+
+- `$const: exe_suffix ? $env: home ? xdg-data-home ? exe_suffix`
+
+如果要支持这种语法的话, 那么解析会变得麻烦，并且 `$env: exe_suffix` 与 `$const: exe_suffix` 很容易搞混。
 
 ### base
 

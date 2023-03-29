@@ -4,7 +4,7 @@ use std::ops::ControlFlow;
 impl EnvPath {
     /// This function is used to resolve ident in `$const: ident`.
     /// Although the relevant content is obtained at compile time, but wrapping it in `OsCow` is not.
-    fn match_const_dirs(ident: &str) -> OsCow {
+    pub(crate) fn match_const_dirs(ident: &str) -> OsCow {
         // Imports for using all env::consts
         use std::env::consts::*;
         // Create a cow wrapper for the OS Str.
@@ -27,6 +27,7 @@ impl EnvPath {
             "exe_suffix" => as_cow(EXE_SUFFIX),
             "exe_extension" => as_cow(EXE_EXTENSION),
             "empty" => Self::os_cow(""),
+            x if Self::starts_with_star_arr(x) => Self::find_map_single_star(x),
             _ => None,
         }
     }
@@ -51,5 +52,8 @@ mod tests {
     fn test_const_dir() {
         let v = EnvPath::from(["$const: family ?? os"]);
         dbg!(v.de().display());
+
+        let p = EnvPath::new(["$const: empty ?? dir * config"]);
+        dbg!(p.display());
     }
 }

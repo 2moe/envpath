@@ -207,7 +207,7 @@ impl EnvPath {
             #[cfg(windows)]
             "microsoft" => into_cow(data_dir().map(|x| x.join("Microsoft"))),
             "empty" => Self::os_cow(""),
-            
+            x if Self::starts_with_star_arr(x) => Self::find_map_single_star(x),
             _ => None,
         }
     }
@@ -226,5 +226,14 @@ mod tests {
 
         path.set_raw(vec![" $dir:  bin ?? first_path  "]);
         dbg!(path.de().display());
+    }
+
+    #[test]
+    fn remix_dir() {
+        let p = EnvPath::new(["$env: user ?? dir * cfg ? empty"]);
+        dbg!(p);
+
+        let p2 = EnvPath::new(["$dir: runtimes ?? test ? env * HOME"]);
+        dbg!(p2);
     }
 }
