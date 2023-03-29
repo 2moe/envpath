@@ -165,7 +165,7 @@
 //! The following syntax is currently supported:
 //!
 //! - `$const: exe_suffix ?   env * HOME ?   env * XDG_DATA_HOME ?   env * EXE_SUFFIX`
-//! - `$env: home ? xdg-data-home ? exe_suffix     const * exe_suffix`
+//! - `$env: home ? xdg-data-home ? exe_suffix ?    const * exe_suffix`
 //!
 //! Not supported:
 //!
