@@ -1,4 +1,5 @@
 use crate::EnvPath;
+use rand::{distributions::Alphanumeric, Rng};
 
 impl EnvPath {
     /// Generates a random string of alphanumeric characters using the `rand` crate.
@@ -12,12 +13,10 @@ impl EnvPath {
     /// dbg!(&val);
     /// ```
     pub fn get_random_value(rand_length: Option<usize>) -> String {
-        use rand::{distributions::Alphanumeric, Rng}; // Import the necessary modules from the `rand` crate.
-
         rand::thread_rng() // Generate a random number generator using the current thread.
             .sample_iter(&Alphanumeric) // Sample characters from the alphanumeric distribution.
             .take(rand_length.unwrap_or(16)) // Take either the provided length or default to 16 characters.
             .map(char::from) // Map the characters into a String.
-            .collect::<String>() // Collect the mapped characters into a single String.
+            .collect() // Collect the mapped characters into a single String.
     }
 }
