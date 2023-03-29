@@ -208,8 +208,9 @@
 //! | video                    |                          | `$home\Videos`                                                      |
 //! | music                    | audio                    | `$home\music`                                                       |
 //! | template                 |                          | `$ms_dir\Windows\Templates`                                         |
-//! | tmp                      |                          |                                                                     |
-//! | temp                     | temporary                |                                                                     |
+//! | tmp                      |                          | `$tmpdir`                                                           |
+//! | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+//! | temp                     | temporary                | `env::temp_dir()`                                                   |
 //! | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 //! | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
 //! | cli-cache                | cli_cache                | `$home\AppData\Local`                                               |
@@ -220,6 +221,7 @@
 //! | program-data             | program_data             | `$ProgramData`: (`C:\ProgramData`)                                  |
 //! | microsoft                |                          | `$home\AppData\Roaming\Microsoft`                                   |
 //! | local-low                | local_low                | `$home\AppData\LocalLow`                                            |
+//! | empty                    |                          | ""                                                                  |
 //!
 //!
 //! Note: `project_dirs` has more advanced features.

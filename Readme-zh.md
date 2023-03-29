@@ -443,8 +443,10 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | video      |              | `$xdg_video_dir`:(`$home/Videos`)        |
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
-| tmp        |              |                                          |
-| temp       | temporary    |                                          |
+| tmp        |              | `$tmpdir`:(`/tmp`)                       |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`             |
+| temp       | temporary    | `env::temp_dir()`                        |
+| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
@@ -459,6 +461,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 - tmp: 先获取 `$env: tmpdir` 的值，若存在, 则使用该值。若不存在，使用 `env::temp_dir()` 获取，判断文件路径是否只读，若是，则使用 `["$dir: cache", "tmp"]`
   - 有些平台的 tmp 目录对于普通用户可能是只读的，没错，说的就是你： `/data/local/tmp`
 - temp: 使用 `env::temp_dir()` 获取, 不进行判断
+- tmp-rand: 生成随机的临时目录，需要启用 `rand` 功能
 
 #### Android
 
@@ -468,36 +471,38 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 
 对于没有列出的内容，使用 linux 的数据
 
-| name       | alias        | Android `$dir`        |
-| ---------- | ------------ | --------------------- |
-| home       |              |                       |
-| cache      |              |                       |
-| cfg        | config       |                       |
-| data       |              |                       |
-| local-data | local_data   | `$sd/Android/data`    |
-| local-cfg  | local_config | `$sd/Android/data`    |
-| desktop    |              |                       |
-| doc        | document     | `$sd/Documents`       |
-| dl         | download     | `$sd/Download`        |
-| bin        | exe          |                       |
-| first-path | first_path   |                       |
-| last-path  | last_path    |                       |
-| font       | typeface     |                       |
-| pic        | picture      | `$sd/Pictures`        |
-| pref       | preference   |                       |
-| pub        | public       |                       |
-| runtime    |              |                       |
-| state      |              |                       |
-| video      |              | `$sd/Movies`          |
-| music      | audio        | `$sd/Music`           |
-| template   |              |                       |
-| tmp        |              |                       |
-| temp       | temporary    |                       |
-| cli-data   | cli_data     | `$xdg_data_home`      |
-| cli-cfg    | cli_config   | `$xdg_config_home`    |
-| cli-cache  | cli_cache    | `$xdg_cache_home`     |
-| sd         |              | /storage/self/primary |
-| empty      |              | ""                    |
+| name       | alias        | Android `$dir`                        |
+| ---------- | ------------ | ------------------------------------- |
+| home       |              |                                       |
+| cache      |              |                                       |
+| cfg        | config       |                                       |
+| data       |              |                                       |
+| local-data | local_data   | `$sd/Android/data`                    |
+| local-cfg  | local_config | `$sd/Android/data`                    |
+| desktop    |              |                                       |
+| doc        | document     | `$sd/Documents`                       |
+| dl         | download     | `$sd/Download`                        |
+| bin        | exe          |                                       |
+| first-path | first_path   |                                       |
+| last-path  | last_path    |                                       |
+| font       | typeface     |                                       |
+| pic        | picture      | `$sd/Pictures`                        |
+| pref       | preference   |                                       |
+| pub        | public       |                                       |
+| runtime    |              |                                       |
+| state      |              |                                       |
+| video      |              | `$sd/Movies`                          |
+| music      | audio        | `$sd/Music`                           |
+| template   |              |                                       |
+| tmp        |              | `$tmpdir`                             |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`          |
+| temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
+| var_tmp    | var-tmp      |                                       |
+| cli-data   | cli_data     | `$xdg_data_home`                      |
+| cli-cfg    | cli_config   | `$xdg_config_home`                    |
+| cli-cache  | cli_cache    | `$xdg_cache_home`                     |
+| sd         |              | /storage/self/primary                 |
+| empty      |              | ""                                    |
 
 #### Windows
 
@@ -527,8 +532,9 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | video                    |                          | `$home\Videos`                                                      |
 | music                    | audio                    | `$home\music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
-| tmp                      |                          |                                                                     |
-| temp                     | temporary                |                                                                     |
+| tmp                      |                          | `$tmpdir`                                                           |
+| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+| temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
 | cli-cache                | cli_cache                | `$home\AppData\Local`                                               |
@@ -566,8 +572,10 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | video      |              | `$home/Movies`                      |
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
-| tmp        |              |                                     |
-| temp       | temporary    |                                     |
+| tmp        |              | `$tmpdir`                           |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`        |
+| temp       | temporary    | `env::temp_dir()`                   |
+| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |

@@ -1,5 +1,10 @@
 use crate::{envpath_core::EnvPath, OsCow};
-use std::{borrow::Cow, env, ops::ControlFlow, path::PathBuf};
+use std::{
+    borrow::Cow,
+    env,
+    ops::ControlFlow,
+    path::{Path, PathBuf},
+};
 impl EnvPath {
     /// Returns the path to the `Microsoft` directory in the local data folder on Windows, if available.
     ///
@@ -84,33 +89,71 @@ impl EnvPath {
     }
 
     /// Returns the path to the temporary directory, either specified by the `TMPDIR` environment variable or the system temporary directory.
-    pub(crate) fn set_tmp_dir<'a>() -> OsCow<'a> {
+    pub fn get_tmp_dir() -> PathBuf {
         match env::var_os("TMPDIR") {
             // Checks if the TMPDIR environment variable is set
-            Some(s) => Self::into_os_cow(s), // If it is, return its value wrapped in an OsCow object
+            Some(s) => PathBuf::from(s),
             None => match env::temp_dir() {
-                // If it is not set, get the system temporary directory
                 p if p
                     .metadata()
                     .map_or(true, |x| x.permissions().readonly()) =>
-                // If the system temporary directory is read-only
                 {
-                    dirs::cache_dir().and_then(|x| Self::into_os_cow(x.join("tmp")))
-                    // Get the path to the cache directory and append "tmp" to it, then return it wrapped in an OsCow object
+                    dirs::cache_dir().map_or_else(
+                        || PathBuf::from_iter([".tmp"]),
+                        |x| x.join("tmp"),
+                    )
                 }
-                p => Self::into_os_cow(p), // Otherwise, return the system temporary directory wrapped in an OsCow object
+                p => p,
             },
         }
     }
 
-    /// Returns the path to the directory specified by the given function, or the Android-specific directory if running on Android.
+    /// # OverView
     ///
-    /// # Parameters
+    /// | Property      | Description                                                                                                                                                                                                             |
+    /// | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    /// | Name      | `get_tmp_random_dir`                                                                                                                                                                                                    |
+    /// | Parameters     | <table><tr><td>`prefix`:</td> <td>optional prefix string to add to the random directory name.</td></tr> <tr><td>`rand_length`:</td> <td>optional length for the random portion of the directory name.</td></tr></table> |
+    /// | Return Value  | `PathBuf` type representing file system paths.                                                                                                                                                                          |
+    /// | Functionality | Generates a random temporary directory path.                                                                                                                                                                            |
+    /// | Dependencies  | - `rand` crate for generating random strings. <br> - `PathBuf` type for representing file system paths.                                                                                                                 |
+    /// | Notes         | - The function only works when the "rand" feature is enabled. <br> - If no `rand_length` argument is provided, defaults to 16 characters.                                                                               |
     ///
-    /// - `p` - A function that returns an `Option<PathBuf>` object.
-    /// - `_android_dir` - A string representing the Android-specific directory to use.
-    ///     For non-android platforms, to avoid the "unused variable" warning, I added the `_` prefix to the variable name
+    /// # Examples
     ///
+    /// ```
+    /// let dir = envpath::EnvPath::get_tmp_random_dir(None, None);
+    /// // &dir = "/tmp/envpath_Y1NNxaMhchjEAAMn"
+    /// dbg!(&dir);
+    /// ```
+    #[cfg(feature = "rand")]
+    pub fn get_tmp_random_dir(
+        prefix: Option<&str>, // An optional prefix string to add to the random directory name.
+        rand_length: Option<usize>, // An optional length for the random portion of the directory name.
+    ) -> PathBuf {
+        use rand::{distributions::Alphanumeric, Rng}; // Import the necessary modules from the `rand` crate.
+
+        let random = rand::thread_rng() // Generate a random number generator using the current thread.
+            .sample_iter(&Alphanumeric) // Sample characters from the alphanumeric distribution.
+            .take(rand_length.unwrap_or(16)) // Take either the provided length or default to 16 characters.
+            .map(char::from) // Map the characters into a String.
+            .collect::<String>(); // Collect the mapped characters into a single String.
+
+        let join_random = |s| Self::get_tmp_dir().join(s); // Define a closure to join the random String with the temporary directory path.
+
+        match prefix {
+            // Match on the provided prefix.
+            Some(x) if x.trim().is_empty() => join_random(random),
+            Some(x) => join_random(format!("{x}{random}")), // If a prefix is given, append it to the random string.
+            _ => join_random(format!("{}_{random}", Self::PKG_NAME)),
+        }
+    }
+
+    ///
+    /// |  Name | `set_dir` |
+    /// | --- | --- |
+    /// | Parameters | <table><tr><td>`p`:</td><td>A function that returns an `Option<PathBuf>` object.</td></tr> <tr><td>`_android_dir`:</td><td>A string representing the Android-specific directory to use. For non-Android platforms, to avoid the "unused variable" warning, I added the `_` prefix to the variable name.</td></tr></table> |
+    /// | Returns | The path to the directory specified by the given function, or the Android-specific directory if running on Android. |
     pub(crate) fn set_dir<F>(p: F, _android_dir: &str) -> OsCow
     where
         F: FnOnce() -> Option<PathBuf>,
@@ -171,7 +214,15 @@ impl EnvPath {
             "state" => into_cow(state_dir()),
             "template" => into_cow(template_dir()),
             "video" | "movie" => Self::set_dir(video_dir, "Movies"),
-            "tmp" => Self::set_tmp_dir(),
+            "tmp" => Self::into_os_cow(Self::get_tmp_dir()),
+            #[cfg(feature = "rand")]
+            "tmp-rand" | "tmp_random" => {
+                Self::into_os_cow(Self::get_tmp_random_dir(None, None))
+            }
+            #[cfg(unix)]
+            "var-tmp" | "var_tmp" => {
+                Self::into_os_cow(Path::new("/var/tmp").join(Self::PKG_NAME))
+            }
             "temp" | "temporary" => Self::into_os_cow(env::temp_dir()),
             #[cfg(target_os = "android")]
             "sd" => Self::os_cow(Self::AND_SD),
@@ -236,5 +287,29 @@ mod tests {
 
         let p2 = EnvPath::new(["$dir: runtimes ?? test ? env * HOME"]);
         dbg!(p2);
+    }
+
+    #[test]
+    #[cfg(feature = "rand")]
+    fn random_tmp_dir() {
+        use rand::{distributions::Alphanumeric, Rng};
+
+        let random = rand::thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(16)
+            .map(char::from)
+            .collect::<String>();
+
+        let dir = EnvPath::get_tmp_dir().join(random);
+
+        dbg!(&dir);
+    }
+
+    #[test]
+    #[cfg(feature = "rand")]
+    fn get_random_tmp_dir() {
+        let dir = EnvPath::get_tmp_random_dir(None, None);
+        // &dir = "/tmp/envpath_Y1NNxaMhchjEAAMn"
+        dbg!(&dir);
     }
 }

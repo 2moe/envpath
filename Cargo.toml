@@ -13,14 +13,18 @@ The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg"]`
 
 [features]
 default = ["const-dirs", "base-dirs", "project-dirs"]
+# default = ["all"]
 base-dirs = ["dep:dirs"]
+rand = ["dep:rand", "base-dirs"]
 project-dirs = ["dep:directories"]
 const-dirs = []
 serde = ["dep:serde"]
+all = ["project-dirs", "const-dirs", "serde", "rand"]
 
 [dependencies]
 directories = { version = "5.0.0", optional = true }
 dirs = { version = "5.0.0", optional = true }
+rand = { version = "0.8.5", optional = true }
 serde = { version = "1.0.158", optional = true }
 
 [dev-dependencies]

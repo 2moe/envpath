@@ -440,8 +440,10 @@ Many of these contents are obtained from [dirs](https://docs.rs/dirs/latest/dirs
 | video      |              | `$xdg_video_dir`:(`$home/Videos`)        |
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
-| tmp        |              |                                          |
-| temp       | temporary    |                                          |
+| tmp        |              | `$tmpdir`:(`/tmp`)                       |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`             |
+| temp       | temporary    | `env::temp_dir()`                        |
+| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
@@ -454,6 +456,7 @@ Regarding `tmp` and `temp`:
 - `tmp`: First, get the value of `$env:tmpdir`. If it exists, use that value. If not, use `env::temp_dir()` to obtain the directory path and check if it is read-only. If it is, use `["$dir:cache", "tmp"]`.
   - On some platforms, the tmp directory may be read-only for regular users, such as `/data/local/tmp`.
 - `temp`: Use `env::temp_dir()` to obtain the directory path, without performing any checks.
+- `tmp-rand`: Generate a random temporary directory, `rand` feature needs to be enabled.
 
 #### Android
 
@@ -463,36 +466,38 @@ Regarding `tmp` and `temp`:
 
 For items not listed, use Linux data.
 
-| name       | alias        | Android `$dir`        |
-| ---------- | ------------ | --------------------- |
-| home       |              |                       |
-| cache      |              |                       |
-| cfg        | config       |                       |
-| data       |              |                       |
-| local-data | local_data   | `$sd/Android/data`    |
-| local-cfg  | local_config | `$sd/Android/data`    |
-| desktop    |              |                       |
-| doc        | document     | `$sd/Documents`       |
-| dl         | download     | `$sd/Download`        |
-| bin        | exe          |                       |
-| first-path | first_path   |                       |
-| last-path  | last_path    |                       |
-| font       | typeface     |                       |
-| pic        | picture      | `$sd/Pictures`        |
-| pref       | preference   |                       |
-| pub        | public       |                       |
-| runtime    |              |                       |
-| state      |              |                       |
-| video      |              | `$sd/Movies`          |
-| music      | audio        | `$sd/Music`           |
-| template   |              |                       |
-| tmp        |              |                       |
-| temp       | temporary    |                       |
-| cli-data   | cli_data     | `$xdg_data_home`      |
-| cli-cfg    | cli_config   | `$xdg_config_home`    |
-| cli-cache  | cli_cache    | `$xdg_cache_home`     |
-| sd         |              | /storage/self/primary |
-| empty      |              | ""                    |
+| name       | alias        | Android `$dir`                        |
+| ---------- | ------------ | ------------------------------------- |
+| home       |              |                                       |
+| cache      |              |                                       |
+| cfg        | config       |                                       |
+| data       |              |                                       |
+| local-data | local_data   | `$sd/Android/data`                    |
+| local-cfg  | local_config | `$sd/Android/data`                    |
+| desktop    |              |                                       |
+| doc        | document     | `$sd/Documents`                       |
+| dl         | download     | `$sd/Download`                        |
+| bin        | exe          |                                       |
+| first-path | first_path   |                                       |
+| last-path  | last_path    |                                       |
+| font       | typeface     |                                       |
+| pic        | picture      | `$sd/Pictures`                        |
+| pref       | preference   |                                       |
+| pub        | public       |                                       |
+| runtime    |              |                                       |
+| state      |              |                                       |
+| video      |              | `$sd/Movies`                          |
+| music      | audio        | `$sd/Music`                           |
+| template   |              |                                       |
+| tmp        |              | `$tmpdir`                             |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`          |
+| temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
+| var_tmp    | var-tmp      |                                       |
+| cli-data   | cli_data     | `$xdg_data_home`                      |
+| cli-cfg    | cli_config   | `$xdg_config_home`                    |
+| cli-cache  | cli_cache    | `$xdg_cache_home`                     |
+| sd         |              | /storage/self/primary                 |
+| empty      |              | ""                                    |
 
 #### Windows
 
@@ -522,8 +527,9 @@ For items not listed, use Linux data.
 | video                    |                          | `$home\Videos`                                                      |
 | music                    | audio                    | `$home\music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
-| tmp                      |                          |                                                                     |
-| temp                     | temporary                |                                                                     |
+| tmp                      |                          | `$tmpdir`                                                           |
+| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+| temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
 | cli-cache                | cli_cache                | `$home\AppData\Local`                                               |
@@ -561,8 +567,10 @@ For items not listed, use Linux data.
 | video      |              | `$home/Movies`                      |
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
-| tmp        |              |                                     |
-| temp       | temporary    |                                     |
+| tmp        |              | `$tmpdir`                           |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`        |
+| temp       | temporary    | `env::temp_dir()`                   |
+| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |

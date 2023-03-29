@@ -15,7 +15,7 @@ impl EnvPath {
         // dbg!(&ident);
 
         match ident {
-            "pkg" | "pkg_name" | "pkg-name" => as_cow(env!("CARGO_PKG_NAME")),
+            "pkg" | "pkg_name" | "pkg-name" => as_cow(Self::PKG_NAME),
             // "bin" | "bin_name" => as_cow(env!("CARGO_BIN_NAME")),
             "pkg_version" | "pkg-version" | "ver" => {
                 as_cow(env!("CARGO_PKG_VERSION"))

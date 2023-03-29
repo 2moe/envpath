@@ -16,6 +16,8 @@ pub struct EnvPath {
 }
 
 impl EnvPath {
+    pub(crate) const PKG_NAME: &str = env!("CARGO_PKG_NAME");
+
     /// Get a reference to the raw sequence of strings.
     ///
     /// # Examples
