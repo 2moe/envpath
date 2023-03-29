@@ -159,7 +159,7 @@
 //! `env*` can be used for fallback, but unlike `$env:`, it does not automatically convert lowercase letters to uppercase, and it does not automatically convert `-` to `_`.
 //!
 //! - `env * home` retrieves `$home`, not `$HOME`.
-//! - `env * home` => `$HOME`
+//! - `$env: home` => `$HOME`
 //! - `env * xdg-data-home` => `$xdg-data-home`, not `$XDG_DATA_HOME`
 //! - `$env: xdg-data-home` => `$XDG_DATA_HOME`
 //!
