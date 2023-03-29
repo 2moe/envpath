@@ -380,7 +380,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | `dir * [dir]`             |             | `dir * download`                 |
 | `proj * (project): ident` |             | `proj * (com. xy.z): local-data` |
 
-举个例子：
+#### example
 
 ```rs
 ["
@@ -394,7 +394,10 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 `env*` 可用于 fallback, 但与 `$env:` 不同，它不会自动将小写字母全部转换为大写，也不会将 `-` 转换为 `_`。
 
-例如： `env * home` 获取的是 `$home` , 而不是 `$HOME`。
+- `env * home` 获取的是 `$home` , 而不是 `$HOME`。
+- `env * home` => `$HOME`
+- `env * xdg-data-home` => `$xdg-data-home`, not `$XDG_DATA_HOME`
+- `$env: xdg-data-home` => `$XDG_DATA_HOME`
 
 > 注： 如果 `$env:` 式子中包含 `*`， 那么自动转换功能也会被禁用。
 
