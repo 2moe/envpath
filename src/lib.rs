@@ -135,6 +135,21 @@
 //! | exe_extension |              | `consts::EXE_EXTENSION` | exe                     |
 //! | empty         |              |                         | ""                      |
 //!
+//! ## val
+//!
+//! > The `value` feature needs to be enabled.
+//!
+//! Use `$val:name` (e.g. `$val: rand-16`) to obtain the values. Unlike `$const:`, most of the values here are obtained at runtime.
+//!
+//! | name           | example                  |
+//! | -------------- | ------------------------ |
+//! | `rand-[usize]` | `$val: rand-8`: 90aU0QqY |
+//! | empty          | ""                       |
+//!
+//! > `$val: rand-[usize]` syntax requires the `rand` feature to be enabled.
+//!
+//! rand is used to obtain random content, and currently only supports strings.
+//!
 //! ## remix
 //!
 //! | expr                        | example                          |
@@ -143,6 +158,7 @@
 //! | `const * [const]`           | `const * arch`                   |
 //! | `dir * [dir]`               | `dir * download`                 |
 //! | `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
+//! | `val * [val]`               | `val * rand-16`                  |
 //!
 //! ### example
 //!
@@ -209,7 +225,7 @@
 //! | music                    | audio                    | `$home\music`                                                       |
 //! | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 //! | tmp                      |                          | `$tmpdir`                                                           |
-//! | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+//! | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                        |
 //! | temp                     | temporary                | `env::temp_dir()`                                                   |
 //! | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 //! | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
@@ -257,6 +273,12 @@ mod base_dirs;
 
 #[cfg(feature = "serde")]
 mod serialisation;
+
+#[cfg(feature = "value")]
+mod value;
+
+#[cfg(feature = "rand")]
+mod random;
 
 #[cfg(test)]
 mod tests {

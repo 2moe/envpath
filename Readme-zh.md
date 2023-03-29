@@ -336,7 +336,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 ### const
 
-使用 `$const: name` (例如 `$const: arch`) 或者是 `$const: alias` (e.g. `$const: architecture`) 来获取常量值。
+使用 `$const: name` (e.g. `$const: arch`) 或者是 `$const: alias` (e.g. `$const: architecture`) 来获取常量值。
 这些值是在编译时获取的，而不是运行时。
 
 | name          | alias        | From                    | example                 |
@@ -370,6 +370,22 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | powerpc64 (endian = little) | ppc64el                                                                             |
 | x86 (i586/i686)             | i386                                                                                |
 | other                       | [consts::ARCH](https://doc.rust-lang.org/nightly/std/env/consts/constant.ARCH.html) |
+
+### val
+
+使用 `$val:name` (e.g. `$val: rand-16`) 来获取值。与 `$const:` 不同，`$val:` 的值是在运行时获取的，而不是编译时。
+
+| name           | example                           |
+| -------------- | --------------------------------- |
+| `rand-[usize]` | `$val: rand-16`: 90aU0QqYnx1gPEgN |
+| empty          | ""                                |
+
+rand 用于获取 random(随机) 内容，目前仅支持字符串。
+
+> 碎碎念：咱感觉在写这个功能的时候，有点走火入魔了，写着写着，甚至想要加上时间功能，类似于 `$val: time(rfc-3339, now)`
+>
+> 有时候，功能并非越多越好。  
+> EnvPath 的主要目标是简单的跨平台路径，加太多功能有点违背初衷了。
 
 ### remix
 
@@ -444,7 +460,7 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
 | tmp        |              | `$tmpdir`:(`/tmp`)                       |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`             |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`            |
 | temp       | temporary    | `env::temp_dir()`                        |
 | var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
@@ -495,7 +511,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music      | audio        | `$sd/Music`                           |
 | template   |              |                                       |
 | tmp        |              | `$tmpdir`                             |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`          |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`         |
 | temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
 | var_tmp    | var-tmp      |                                       |
 | cli-data   | cli_data     | `$xdg_data_home`                      |
@@ -533,7 +549,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music                    | audio                    | `$home\music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 | tmp                      |                          | `$tmpdir`                                                           |
-| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                       |
 | temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
@@ -573,7 +589,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
 | tmp        |              | `$tmpdir`                           |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`        |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
 | temp       | temporary    | `env::temp_dir()`                   |
 | var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |

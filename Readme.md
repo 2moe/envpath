@@ -334,7 +334,7 @@ When you understand the purpose of `$env:userprofile ?? QwQ-Dir ? LocalAppData ?
 
 ### const
 
-Use `$const:name` (such as `$const:arch`) or `$const:alias` (e.g. `$const:architecture`) to obtain constant values. These values are obtained at compile time rather than runtime.
+Use `$const:name` (e.g. `$const:arch`) or `$const:alias` (e.g. `$const:architecture`) to obtain constant values. These values are obtained at compile time rather than runtime.
 
 | name          | alias        | From                    | example                 |
 | ------------- | ------------ | ----------------------- | ----------------------- |
@@ -368,6 +368,21 @@ The following table shows the possible output values for `$const:deb-arch`:
 
 For example, if you compile a package for `armv7`, the value obtained by `$const:arch` would be `arm`, while `$const:deb-arch` could be `armhf`.
 
+### val
+
+> The `value` feature needs to be enabled.
+
+Use `$val:name` (e.g. `$val: rand-16`) to obtain the values. Unlike `$const:`, most of the values here are obtained at runtime.
+
+| name           | example                  |
+| -------------- | ------------------------ |
+| `rand-[usize]` | `$val: rand-8`: uzI1izWG |
+| empty          | ""                       |
+
+> `$val: rand-[usize]` syntax requires the `rand` feature to be enabled.
+
+rand is used to obtain random content, and currently only supports strings.
+
 ### remix
 
 | expr                        | example                          |
@@ -376,6 +391,7 @@ For example, if you compile a package for `armv7`, the value obtained by `$const
 | `const * [const]`           | `const * arch`                   |
 | `dir * [dir]`               | `dir * download`                 |
 | `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
+| `val * [val]`               | `val * rand-16`                  |
 
 #### example
 
@@ -441,7 +457,7 @@ Many of these contents are obtained from [dirs](https://docs.rs/dirs/latest/dirs
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
 | tmp        |              | `$tmpdir`:(`/tmp`)                       |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`             |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`            |
 | temp       | temporary    | `env::temp_dir()`                        |
 | var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
@@ -490,7 +506,7 @@ For items not listed, use Linux data.
 | music      | audio        | `$sd/Music`                           |
 | template   |              |                                       |
 | tmp        |              | `$tmpdir`                             |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`          |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`         |
 | temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
 | var_tmp    | var-tmp      |                                       |
 | cli-data   | cli_data     | `$xdg_data_home`                      |
@@ -528,7 +544,7 @@ For items not listed, use Linux data.
 | music                    | audio                    | `$home\music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 | tmp                      |                          | `$tmpdir`                                                           |
-| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_$random`                                        |
+| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                       |
 | temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
@@ -568,7 +584,7 @@ For items not listed, use Linux data.
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
 | tmp        |              | `$tmpdir`                           |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_$random`        |
+| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
 | temp       | temporary    | `env::temp_dir()`                   |
 | var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |

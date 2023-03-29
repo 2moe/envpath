@@ -7,7 +7,7 @@ pub const FWQM: char = '\u{FF1F}';
 pub const HWQM: char = '\u{3F}';
 
 impl EnvPath {
-    pub(crate) const START_ARR: [&str; 4] = ["env", "dir", "const", "proj"];
+    pub(crate) const START_ARR: [&str; 5] = ["env", "dir", "const", "proj", "val"];
     /// It's a function for parsing rules(e.g. `$env: user ? userprofile ?? home`).
     /// The `s` parameter in this function refers to all strings in the closed interval from **user** to **home**. Does not contain the `$env:`.
     ///
@@ -87,6 +87,8 @@ impl EnvPath {
                     },
                     #[cfg(feature = "const-dirs")]
                     "const" => Self::match_const_dirs(trimed),
+                    #[cfg(feature = "value")]
+                    "val" => Self::match_values(trimed),
                     _ => None,
                 }
             }
@@ -98,16 +100,9 @@ impl EnvPath {
         let mut iter = x.splitn(2, '*');
 
         match (iter.next(), iter.next()) {
-            (Some(start), Some(_)) => match start.trim() {
-                "env" => true,
-                #[cfg(feature = "base-dirs")]
-                "dir" => true,
-                #[cfg(feature = "project-dirs")]
-                "proj" => true,
-                #[cfg(feature = "const-dirs")]
-                "const" => true,
-                _ => false,
-            },
+            (Some(start), Some(_)) => Self::START_ARR
+                .iter()
+                .any(|s| start.starts_with(s)),
             _ => false,
         }
     }

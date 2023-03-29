@@ -94,6 +94,11 @@ impl EnvPath {
                                     Self::handle_const_dirs(get_2nd_chunk()),
                                     s,
                                 ),
+                                #[cfg(feature = "value")]
+                                "$val" => or_default(
+                                    Self::handle_values(get_2nd_chunk()),
+                                    s,
+                                ),
                                 // If the first element is $dir and the base-dirs feature is enabled, get the value of the base directory with the second element as the key
                                 #[cfg(feature = "base-dirs")]
                                 "$dir" => {

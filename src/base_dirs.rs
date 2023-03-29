@@ -131,13 +131,7 @@ impl EnvPath {
         prefix: Option<&str>, // An optional prefix string to add to the random directory name.
         rand_length: Option<usize>, // An optional length for the random portion of the directory name.
     ) -> PathBuf {
-        use rand::{distributions::Alphanumeric, Rng}; // Import the necessary modules from the `rand` crate.
-
-        let random = rand::thread_rng() // Generate a random number generator using the current thread.
-            .sample_iter(&Alphanumeric) // Sample characters from the alphanumeric distribution.
-            .take(rand_length.unwrap_or(16)) // Take either the provided length or default to 16 characters.
-            .map(char::from) // Map the characters into a String.
-            .collect::<String>(); // Collect the mapped characters into a single String.
+        let random = Self::get_random_value(rand_length);
 
         let join_random = |s| Self::get_tmp_dir().join(s); // Define a closure to join the random String with the temporary directory path.
 
