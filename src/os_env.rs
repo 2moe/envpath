@@ -61,10 +61,10 @@ impl EnvPath {
         }
     }
 
-    /// This function is used to handle ident starting with `env =` or `env=`, and then resolve the environment variable to the right of `=`
+    /// This function is used to handle ident starting with `env *` or `env*`, and then resolve the environment variable to the right of `*`
     ///
-    /// Assuming that the ident is `env = home`, it does not automatically convert `home` to `HOME`, but gets `$home` directly.
-    pub(crate) fn handle_star<'a>(s: &'a str, start: &str) -> OsCow<'a> {
+    /// Assuming that the ident is `env * home`, it does not automatically convert `home` to `HOME`, but gets `$home` directly.
+    pub(crate) fn handle_remix<'a>(s: &'a str, start: &str) -> OsCow<'a> {
         match s
             .trim_start_matches(start)
             .trim()
@@ -94,7 +94,7 @@ impl EnvPath {
         }
     }
 
-    pub(crate) fn starts_with_star_arr(x: &str) -> bool {
+    pub(crate) fn starts_with_remix_expr(x: &str) -> bool {
         let mut iter = x.splitn(2, '*');
 
         match (iter.next(), iter.next()) {
@@ -112,13 +112,13 @@ impl EnvPath {
         }
     }
 
-    pub(crate) fn find_map_single_star(x: &str) -> OsCow {
+    pub(crate) fn parse_remix_expr(x: &str) -> OsCow {
         Self::START_ARR
             .iter()
             // .inspect(|x| println!("in: {x}"))
             .filter(|&start| x.starts_with(start))
             // .inspect(|x| println!("out: {x}"))
-            .find_map(|start| Self::handle_star(x, start))
+            .find_map(|start| Self::handle_remix(x, start))
     }
 
     pub(crate) fn into_os_env(x: &str) -> OsCow {
@@ -127,9 +127,9 @@ impl EnvPath {
 
     fn match_os_env(ident: &str) -> OsCow {
         match ident {
-            x if Self::starts_with_star_arr(x) => {
+            x if Self::starts_with_remix_expr(x) => {
                 // dbg!("find start", x);
-                Self::find_map_single_star(x)
+                Self::parse_remix_expr(x)
             }
             x => Self::into_os_env(x),
         }

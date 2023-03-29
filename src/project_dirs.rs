@@ -279,7 +279,7 @@ impl EnvPath {
                 opt.and_then(Self::into_os_cow)
             }
             "empty" => Self::os_cow(""),
-            x if Self::starts_with_star_arr(x) => Self::find_map_single_star(x),
+            x if Self::starts_with_remix_expr(x) => Self::parse_remix_expr(x),
             _ => None,
             // If an unknown directory is requested, return None
         }
