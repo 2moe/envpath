@@ -227,6 +227,8 @@ pub fn get_tmp_dir() -> PathBuf {
     }
 }
 
+/// Generates a random temporary directory.(`rand` feature needs to be enabled)
+///
 /// # OverView
 ///
 /// | Property      | Description                                                                                                                                                                                                             |
