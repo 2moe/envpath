@@ -1,9 +1,8 @@
 use crate::{
     envpath_core::EnvPath,
     parser::{FULL_COLON, HALF_COLON},
-    OsCow,
+    OsCow, ProjectDirs,
 };
-use directories::ProjectDirs;
 
 #[cfg(windows)]
 use directories::BaseDirs;
@@ -74,7 +73,7 @@ impl EnvPath {
     ///
     /// | Part | Abbreviation | Meaning     |
     /// |------|-------------|--------------|
-    /// | org  | qual        | organization |
+    /// | org  | qual        | qualifier    |
     /// | moz  | org         | organization |
     /// | ff   | app         | application  |
     ///

@@ -268,6 +268,9 @@ mod const_dirs;
 #[cfg(feature = "project-dirs")]
 mod project_dirs;
 
+#[cfg(feature = "project-dirs")]
+pub use directories::ProjectDirs;
+
 #[cfg(feature = "base-dirs")]
 mod base_dirs;
 
