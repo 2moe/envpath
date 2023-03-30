@@ -1,7 +1,7 @@
 use crate::{
-    envpath_core::EnvPath,
+    os_cow::{self, into_os_cow},
     parser::{FULL_COLON, HALF_COLON},
-    OsCow, ProjectDirs,
+    EnvPath, OsCow, ProjectDirs,
 };
 
 #[cfg(windows)]
@@ -12,11 +12,11 @@ use std::path::PathBuf;
 
 use std::{borrow::Cow, io, ops::ControlFlow, path::Path};
 
-/// Implement additional methods for EnvPath when the "project-dirs" feature is enabled
+/// Implement additional methods for EnvPath when the `project` feature is enabled
 ///
 /// If you see a method(function) with a parameter name containing **_** prefix (e.g. **_name**) in some methods, do not delete it.
 /// This may be a platform-specific parameter, so to avoid the "unused variable" warning, I've added the "_" prefix.
-impl EnvPath {
+impl EnvPath<'_> {
     // Method to extract project name information from a string
     pub(crate) fn get_project_name(c0: &str) -> Option<(&str, &str, Cow<str>)> {
         // Find the first and last occurrence of parentheses in the string
@@ -50,11 +50,11 @@ impl EnvPath {
     ) -> OsCow<'a> {
         match () {
             #[cfg(target_os = "android")]
-            () => Self::into_os_cow(name), // If the target OS is Android, use the input name as the path
+            () => into_os_cow(name), // If the target OS is Android, use the input name as the path
             #[allow(unreachable_patterns)]
             () => match proj {
-                Some(s) => Self::into_os_cow(s.project_path()), // If a ProjectDirs object is provided, use its project path
-                _ => Self::into_os_cow(name), // Otherwise, use the input name as the path
+                Some(s) => into_os_cow(s.project_path()), // If a ProjectDirs object is provided, use its project path
+                _ => into_os_cow(name), // Otherwise, use the input name as the path
             },
         }
     }
@@ -104,9 +104,9 @@ impl EnvPath {
     {
         match () {
             #[cfg(target_os = "android")]
-            () => Self::into_os_cow(PathBuf::from_iter(_android_iter)),
+            () => into_os_cow(PathBuf::from_iter(_android_iter)),
             #[allow(unreachable_patterns)]
-            () => proj.and_then(|s| Self::into_os_cow(f(s))), // Otherwise, use the configuration directory provided by the ProjectDirs object
+            () => proj.and_then(|s| into_os_cow(f(s))), // Otherwise, use the configuration directory provided by the ProjectDirs object
         }
     }
 
@@ -218,7 +218,7 @@ impl EnvPath {
         proj: Option<&ProjectDirs>,
     ) -> OsCow<'a> {
         // Define a closure to convert an Option<Path> to an OsCow
-        let and_then_cow = |s: Option<&Path>| s.and_then(Self::into_os_cow);
+        let and_then_cow = |s: Option<&Path>| s.and_then(into_os_cow);
 
         // Determine which project directory is being requested and set the corresponding path
         let proj_path = || Self::set_proj_path(name, proj);
@@ -243,12 +243,12 @@ impl EnvPath {
             "local-data" | "local_data" => Self::set_proj_dir(
                 proj,
                 ProjectDirs::data_local_dir,
-                &[Self::AND_SD, "Android", "data", name],
+                &[os_cow::AND_SD, "Android", "data", name],
             ),
             "local-cfg" | "local_cfg" | "local_config" => Self::set_proj_dir(
                 proj,
                 ProjectDirs::config_local_dir,
-                &[Self::AND_SD, "Android", "data", name, "files"],
+                &[os_cow::AND_SD, "Android", "data", name, "files"],
             ),
             "pref" | "preference" => Self::set_proj_dir(
                 proj,
@@ -258,13 +258,13 @@ impl EnvPath {
             "runtime" => proj.and_then(|x| and_then_cow(x.runtime_dir())),
             "state" => proj.and_then(|x| and_then_cow(x.state_dir())),
             "cli-data" | "cli_data" => {
-                proj.and_then(|p| Self::into_os_cow(p.data_local_dir()))
+                proj.and_then(|p| into_os_cow(p.data_local_dir()))
             }
             "cli-cfg" | "cli_cfg" | "cli_config" => {
-                proj.and_then(|p| Self::into_os_cow(p.config_local_dir()))
+                proj.and_then(|p| into_os_cow(p.config_local_dir()))
             }
             "cli-cache" | "cli_cache" => {
-                proj.and_then(|p| Self::into_os_cow(p.cache_dir()))
+                proj.and_then(|p| into_os_cow(p.cache_dir()))
             }
             #[cfg(windows)]
             "local-low" | "local_low" => {
@@ -275,9 +275,9 @@ impl EnvPath {
                             .join(x)
                     })
                 });
-                opt.and_then(Self::into_os_cow)
+                opt.and_then(into_os_cow)
             }
-            "empty" => Self::os_cow(""),
+            "empty" => os_cow::from_str(""),
             x if Self::starts_with_remix_expr(x) => Self::parse_remix_expr(x),
             _ => None,
             // If an unknown directory is requested, return None
@@ -307,8 +307,8 @@ mod tests {
         dbg!(path.display());
 
         let path2 = EnvPath::from(["
-            $proj (com . moz . ff )：runtimes ？ data ？？ state ？？ 
-            (com . gg . cr)： cfg ？？ cache ？ 
+            $proj (com . moz . ff )：runtimes ？ data ？？ state ？？
+            (com . gg . cr)： cfg ？？ cache ？
             (com . ms . eg)： local-data ？ data
             "])
         .de();

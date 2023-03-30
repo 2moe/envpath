@@ -23,7 +23,7 @@
 /// # Examples
 ///
 /// ```
-/// let deb_arch = envpath::arch::get_deb_arch();
+/// let deb_arch = envpath::consts::get_deb_arch();
 /// println!("Debian architecture: {}", deb_arch);
 ///
 /// #[cfg(target_arch = "x86_64")]

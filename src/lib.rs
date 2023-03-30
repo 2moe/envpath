@@ -6,16 +6,16 @@
 //! - A struct [EnvPath](crate::EnvPath) for representing system paths. `raw` is the special rule path(vector), while `path` is the normal path after parsing. Since `Deref` is implemented, you can use it just like [Path](::std::path::Path) of std.
 //!
 //! The library also supports optional features for getting common system paths:
-//! - `const-dirs` - Gets the value of some specific constants built into crate.
-//! - `project-dirs` - For generating project directories (user-specific data dir)
-//! - `base-dirs` - Provides standard directories on different platforms.
+//! - `consts` - Gets the value of some specific constants built into crate.
+//! - `project` - For generating project directories (user-specific data dir)
+//! - `dirs` - Provides standard directories on different platforms.
 //!
 //!
 //! ## Serialization and deserialization
 //!
 //! If you want to serialize/deserialize a configuration file, you need to enable the `serde` feature of envpath and add serde, as well as other related dependencies.
 //!
-//! Next, we will add a `ron` dependency (You can actually use formats such as toml, yaml or json, but you need to add the relevant dependencies instead of using ron.)
+//! Next, we will add a `ron` dependency (You can actually use formats such as yaml or json, but you need to add the relevant dependencies instead of using ron.)
 //!
 //! ```sh
 //! cargo add envpath --features=serde
@@ -28,16 +28,15 @@
 //! Now let's try serialization.
 //!
 //! ```rust
-//!         use serde::{Deserialize, Serialize};
 //!         use envpath::EnvPath;
+//!         use serde::{Deserialize, Serialize};
 //!
 //!         #[derive(Debug, Default, Serialize, Deserialize)]
 //!         #[serde(default)]
-//!         struct Cfg {
-//!             dir: Option<EnvPath>,
+//!         struct Cfg<'a> {
+//!             dir: Option<EnvPath<'a>>,
 //!         }
 //!
-//!         // If you want to skip the serialization, change the value of dir to None
 //!         let dir = Some(EnvPath::from([
 //!             "$env: user ?? userprofile ?? home",
 //!         ]));
@@ -61,18 +60,21 @@
 //!
 //! Keeping the raw format during serialization and obtaining its true path during deserialization is reasonable.
 //!
+//! If you want to save performance overhead, you can change the value of `dir` to `None`, and serde should skip it during serialization.
+//!
 //! ### Deserialization
 //!
 //! Next, let's try deserialization!
 //!
 //! ```rust
+//!         use envpath::EnvPath;
 //!         use serde::{Deserialize, Serialize};
 //!         use std::fs::File;
 //!
 //!         #[derive(Debug, Default, Serialize, Deserialize)]
 //!         #[serde(default)]
-//!         struct Cfg {
-//!             dir: Option<EnvPath>,
+//!         struct Cfg<'a> {
+//!             dir: Option<EnvPath<'a>>,
 //!         }
 //!
 //!         let cfg: Cfg = ron::de::from_reader(
@@ -88,8 +90,6 @@
 //!             }
 //!         }
 //! ```
-//!
-//! For crates that support deserialization of toml, yaml, json and do not have a `from_reader()` method, you can use `from_str()`. I won't go into detail about it here.
 //!
 //! The output result of the above function is:
 //!
@@ -247,32 +247,29 @@
 //!
 //! - On Android, it is `/data/data/com.x.y`
 //! - On macOS, it is `/Users/[username]/Library/Application Support/com.x.y`
-use std::{self, borrow::Cow, ffi::OsStr};
-
-/// Type alias `OsCow` for handling OS Strings assigned to the heap or the stack.
-pub type OsCow<'a> = Option<Cow<'a, OsStr>>;
-
-pub use envpath_core::EnvPath;
+use std::{self, path::PathBuf};
 
 mod deref;
-pub mod envpath_core;
+mod from;
+mod os_cow;
 mod os_env;
 mod parser;
+mod raw;
 
-#[cfg(feature = "const-dirs")]
-pub mod arch;
+pub use os_cow::OsCow;
+pub use raw::EnvPathRaw as Raw;
 
-#[cfg(feature = "const-dirs")]
-mod const_dirs;
+#[cfg(feature = "consts")]
+pub mod consts;
 
-#[cfg(feature = "project-dirs")]
-mod project_dirs;
+#[cfg(feature = "project")]
+mod project;
 
-#[cfg(feature = "project-dirs")]
+#[cfg(feature = "project")]
 pub use directories::ProjectDirs;
 
-#[cfg(feature = "base-dirs")]
-mod base_dirs;
+#[cfg(feature = "dirs")]
+pub mod dirs;
 
 #[cfg(feature = "serde")]
 mod serialisation;
@@ -281,90 +278,10 @@ mod serialisation;
 mod value;
 
 #[cfg(feature = "rand")]
-mod random;
+pub mod random;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[cfg(feature = "serde")]
-    #[test]
-    /// Testing deserialization with RON format
-    fn deser_ron() {
-        // use crate::envpath_core::EnvPath;
-        use serde::{Deserialize, Serialize};
-
-        // Struct with data_dir field, of Option EnvPath type
-        #[derive(Serialize, Debug, Deserialize)]
-        struct Cfg {
-            data_dir: Option<EnvPath>,
-        }
-
-        // Sample string to be deserialized
-        let str = r#"["$env: xdg_data_home", "$const: os", "$const: pkg"]"#;
-
-        // Convert the string to EnvPath struct using RON format
-        let path = ron::from_str::<EnvPath>(str).unwrap();
-
-        // Print the path in display format
-        println!("{}", path.display());
-
-        // If the path does not exist, error message will be printed
-        if !path.exists() {
-            eprintln!("Err: File does not exist")
-        }
-    }
-
-    #[test]
-    fn readme_doc_quick_start_0() {
-        let v =
-            EnvPath::from(["$dir: data", "$const: pkg", "$env: test_qwq", "app"])
-                .de();
-        dbg!(v.display(), v.exists());
-    }
-
-    #[test]
-    #[cfg(feature = "serde")]
-    fn readme_doc_quick_start_serialisation() {
-        use serde::{Deserialize, Serialize};
-
-        // Struct with dir field, of Option EnvPath type
-        #[derive(Debug, Default, Serialize, Deserialize)]
-        #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
-        }
-
-        let dir = Some(EnvPath::from(&["$env: user ?? userprofile ?? home"]));
-
-        let ron_str = ron::to_string(&Cfg { dir }).expect("Failed to ser");
-        std::fs::write("test.ron", ron_str)
-            .expect("Failed to write the ron cfg to test.ron");
-    }
-
-    #[test]
-    #[cfg(feature = "serde")]
-    fn readme_doc_quick_start_serialisation_deser() {
-        use serde::{Deserialize, Serialize};
-        use std::fs::File;
-
-        // Struct with dir field, of Option EnvPath type
-        #[derive(Debug, Default, Serialize, Deserialize)]
-        #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
-        }
-
-        let cfg: Cfg = ron::de::from_reader(
-            File::open("test.ron").expect("Failed to open the file: text.ron"),
-        )
-        .expect("Failed to deser ron cfg");
-
-        if let Some(x) = &cfg.dir {
-            if x.exists() {
-                println!("{}", x.display())
-            }
-        }
-        dbg!(&cfg);
-    }
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, Default)]
+pub struct EnvPath<'r> {
+    pub(crate) raw: Raw<'r>,
+    pub path: Option<PathBuf>,
 }

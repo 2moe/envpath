@@ -129,7 +129,7 @@ cargo add envpath
 或者是根据需求添加 features, 而不是使用默认的功能。
 
 ```sh
-cargo add envpath --no-default-features --features=base-dirs,const-dirs,project-dirs
+cargo add envpath --no-default-features --features=dirs,consts,project
 ```
 
 然后在我们的 `main()` 或者是测试函数里添加以下内容。
@@ -197,7 +197,7 @@ Ohhhh！I got it. 这个函数去了一趟德国（de），所以发生了改变
 
 如果您想要序列化/反序列化配置文件，需要启用 envpath 的 `serde` 功能，并且还要添加 serde 依赖，以及与之有关的其他依赖。
 
-下面我们将添加一个 `ron` 依赖（实际上您还可以用 toml, yaml 或 json 等格式，不过相关依赖就不是 ron 了）
+下面我们将添加一个 `ron` 依赖（实际上您还可以用 yaml 或 json 等格式，不过相关依赖就不是 ron 了）
 
 ```sh
 cargo add envpath --features=serde
@@ -205,19 +205,21 @@ cargo add serde --features=derive
 cargo add ron
 ```
 
+#### serialisation
+
 接着让我们一起写代码吧！
 
 ```rust
-        use serde::{Deserialize, Serialize};
         use envpath::EnvPath;
+        use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Default, Serialize, Deserialize)]
         #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
+        struct Cfg<'a> {
+            dir: Option<EnvPath<'a>>,
         }
 
-        let dir = Some(EnvPath::from(&[
+        let dir = Some(EnvPath::from([
             "$env: user ?? userprofile ?? home",
         ]));
 
@@ -236,19 +238,21 @@ cargo add ron
 Yes, you are right. 序列化后，看起来就是这样。
 
 这种格式的路径适合跨平台使用。  
-由于环境变量以及其他东西可能是动态改变的，因此序列化时保留 raw 格式，在反序列化时获得它的真实路径，这种做法是合理的。  
-您如果想要节省性能开销，那可以把 dir 的值改成 None, serde 在序列化时应该会跳过它。
+由于环境变量以及其他东西可能是动态改变的，因此序列化时保留 raw 格式，在反序列化时获得它的真实路径，这种做法是合理的。
+
+#### deserialisation
 
 接下来，让我们试试反序列化吧！
 
 ```rust
+        use envpath::EnvPath;
         use serde::{Deserialize, Serialize};
         use std::fs::File;
 
         #[derive(Debug, Default, Serialize, Deserialize)]
         #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
+        struct Cfg<'a> {
+            dir: Option<EnvPath<'a>>,
         }
 
         let cfg: Cfg = ron::de::from_reader(
@@ -264,8 +268,6 @@ Yes, you are right. 序列化后，看起来就是这样。
             }
         }
 ```
-
-对于支持 toml, yaml, json 反序列化的 crates， 如果没有 `from_reader()`, 那么可以用 `from_str()`，这里就不多介绍了。
 
 上面的函数输出的结果为
 
@@ -317,9 +319,9 @@ All right，它现在是 `(com. x. y)`
 
 在了解完基本的用法后，我们将继续介绍和补充更多内容。
 
-- 最简单的 ： const-dirs
-- 常用的基本标准目录： base-dirs
-- 高级的项目目录： project-dirs
+- 最简单的 ： consts
+- 常用的基本标准目录： dirs
+- 高级的项目目录： project
 
 在下文中，我们会介绍到它们的用法，以及它们都有哪些值。
 

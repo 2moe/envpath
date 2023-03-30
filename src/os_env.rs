@@ -1,4 +1,4 @@
-use crate::{envpath_core::EnvPath, OsCow};
+use crate::{parser, EnvPath, OsCow};
 use std::{borrow::Cow, env::var_os, ops::ControlFlow, path::Path};
 
 /// fullwidth question mark
@@ -6,7 +6,7 @@ pub const FWQM: char = '\u{FF1F}';
 /// halfwidth question mark
 pub const HWQM: char = '\u{3F}';
 
-impl EnvPath {
+impl EnvPath<'_> {
     pub(crate) const START_ARR: [&str; 5] = ["env", "dir", "const", "proj", "val"];
     /// It's a function for parsing rules(e.g. `$env: user ? userprofile ?? home`).
     /// The `s` parameter in this function refers to all strings in the closed interval from **user** to **home**. Does not contain the `$env:`.
@@ -73,10 +73,10 @@ impl EnvPath {
                 let trimed = x.trim_start_matches('*').trim();
                 match start {
                     "env" => Self::into_os_env(trimed),
-                    #[cfg(feature = "base-dirs")]
+                    #[cfg(feature = "dirs")]
                     "dir" => Self::match_base_dirs(trimed),
-                    #[cfg(feature = "project-dirs")]
-                    "proj" => match Self::get_chunks(trimed) {
+                    #[cfg(feature = "project")]
+                    "proj" => match parser::get_chunks(trimed) {
                         c if matches!(c.len(), 0 | 1) => None,
                         c => match Self::set_proj_name_opt_tuple(c[0]) {
                             Some((name, proj)) => {
@@ -85,8 +85,8 @@ impl EnvPath {
                             _ => None,
                         },
                     },
-                    #[cfg(feature = "const-dirs")]
-                    "const" => Self::match_const_dirs(trimed),
+                    #[cfg(feature = "consts")]
+                    "const" => Self::match_consts(trimed),
                     #[cfg(feature = "value")]
                     "val" => Self::match_values(trimed),
                     _ => None,
@@ -136,7 +136,7 @@ impl EnvPath {
         use ControlFlow::{Break, Continue};
 
         match Self::get_question_mark_separator(ident) {
-            sep if sep == ' ' => var_os(ident).and_then(Self::into_os_cow),
+            sep if sep == ' ' => var_os(ident).and_then(crate::os_cow::into_os_cow),
             sep => match Self::parse_dir_rules(ident, Self::match_os_env, sep) {
                 Break(x) | Continue(x) => x, // _ => None,
             },
@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn test_complex_envs() {
         use crate::EnvPath;
-        let s = EnvPath::create_from_str_iter([
+        let s = EnvPath::new([
             "$env       : user ?? aaa ? bbb ? ccc ? xdg_data_home ?? home",
             "$const   :    pkg",
             "$env   :      this_is-a-strange-env ?? to_avoid_conflicts_with_folder_names",

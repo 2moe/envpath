@@ -122,7 +122,7 @@ Because this library uses some relatively new syntax, such as let-else (which re
 First, we need to add the dependency.
 
 ```sh
-cargo add envpath --no-default-features --features=base-dirs,const-dirs,project-dirs
+cargo add envpath --no-default-features --features=dirs,consts,project
 ```
 
 Then add the following content to our `main()` or test function.
@@ -196,13 +196,15 @@ But it only converts a structure like `$env: QuQ? ?? qwq-dir? AwA-home` into ano
 
 If you want to serialize/deserialize a configuration file, you need to enable the `serde` feature of envpath and add serde, as well as other related dependencies.
 
-Next, we will add a `ron` dependency (You can actually use formats such as toml, yaml or json, but you need to add the relevant dependencies instead of using ron.)
+Next, we will add a `ron` dependency (You can actually use formats such as yaml or json, but you need to add the relevant dependencies instead of using ron.)
 
 ```sh
 cargo add envpath --features=serde
 cargo add serde --features=derive
 cargo add ron
 ```
+
+#### Serialization
 
 Now let's try serialization.
 
@@ -212,11 +214,11 @@ Now let's try serialization.
 
         #[derive(Debug, Default, Serialize, Deserialize)]
         #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
+        struct Cfg<'a> {
+            dir: Option<EnvPath<'a>>,
         }
 
-        let dir = Some(EnvPath::from(&[
+        let dir = Some(EnvPath::from([
             "$env: user ?? userprofile ?? home",
         ]));
 
@@ -226,8 +228,6 @@ Now let's try serialization.
         std::fs::write("test.ron", ron_str)
             .expect("Failed to write the ron cfg to test.ron");
 ```
-
-We first defined a `Cfg` struct, created a new `EnvPath` instance, wrapped `dir` in `Cfg`, serialized it with `ron`, and finally wrote it to `test.ron`.
 
 The output result is: `(dir: Some(["$env: user ?? userprofile ?? home"]))`
 
@@ -241,18 +241,19 @@ Since environment variables and other things may be dynamically changed.
 
 Keeping the raw format during serialization and obtaining its true path during deserialization is reasonable.
 
-If you want to save performance overhead, you can change the value of `dir` to `None`, and serde should skip it during serialization.
+#### Deserialization
 
 Next, let's try deserialization!
 
 ```rust
+        use envpath::EnvPath;
         use serde::{Deserialize, Serialize};
         use std::fs::File;
 
         #[derive(Debug, Default, Serialize, Deserialize)]
         #[serde(default)]
-        struct Cfg {
-            dir: Option<EnvPath>,
+        struct Cfg<'a> {
+            dir: Option<EnvPath<'a>>,
         }
 
         let cfg: Cfg = ron::de::from_reader(
@@ -268,8 +269,6 @@ Next, let's try deserialization!
             }
         }
 ```
-
-For crates that support deserialization of toml, yaml, json and do not have a `from_reader()` method, you can use `from_str()`. I won't go into detail about it here.
 
 The output result of the above function is:
 
@@ -315,9 +314,9 @@ Now, it is `$proj(com. x. y): data`.
 
 After learning the basic usage, we will continue to introduce and supplement more content.
 
-- The simplest: const-dirs
-- Common standard directories: base-dirs
-- Advanced project directories: project-dirs
+- The simplest: consts
+- Common standard directories: dirs
+- Advanced project directories: project
 
 In the following text, we will introduce what their functions are and what values they all have.
 
@@ -332,7 +331,7 @@ In the previous text, we have learned about the basic usage. Here are a few more
 As for the use of "?", you can refer to the previous text.  
 When you understand the purpose of `$env:userprofile ?? QwQ-Dir ? LocalAppData ? home`, then congratulations, you have learned how to use env!
 
-### const
+### consts
 
 Use `$const:name` (e.g. `$const:arch`) or `$const:alias` (e.g. `$const:architecture`) to obtain constant values. These values are obtained at compile time rather than runtime.
 
@@ -368,7 +367,7 @@ The following table shows the possible output values for `$const:deb-arch`:
 
 For example, if you compile a package for `armv7`, the value obtained by `$const:arch` would be `arm`, while `$const:deb-arch` could be `armhf`.
 
-### val
+### value
 
 > The `value` feature needs to be enabled.
 
@@ -425,7 +424,7 @@ Not supported:
 
 If it is supported, the parsing may become complicated and there could be confusion between `$env: exe_suffix` and `$const: exe_suffix`.
 
-### base
+### dirs
 
 These are some base-dirs, or you could say standard directories.  
 Use `$dir:name` (e.g. `$dir:dl`) or `$dir:alias` (e.g. `$dir:download`) to obtain the directory.  

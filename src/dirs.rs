@@ -1,11 +1,14 @@
-use crate::{envpath_core::EnvPath, OsCow};
+use crate::{
+    os_cow::{self, into_os_cow},
+    EnvPath, OsCow,
+};
 use std::{
     borrow::Cow,
     env,
     ops::ControlFlow,
     path::{Path, PathBuf},
 };
-impl EnvPath {
+impl EnvPath<'_> {
     /// Returns the path to the `Microsoft` directory in the local data folder on Windows, if available.
     ///
     /// | Platform | Example                                       |
@@ -29,21 +32,21 @@ impl EnvPath {
     ///
     pub(crate) fn set_bin_dir<'a>() -> OsCow<'a> {
         let bin_dir =
-            || dirs::data_local_dir().and_then(|p| Self::into_os_cow(p.join("bin"))); // Gets the path to the local data directory and appends "bin" to it, wrapped in an OsCow object
+            || dirs::data_local_dir().and_then(|p| into_os_cow(p.join("bin"))); // Gets the path to the local data directory and appends "bin" to it, wrapped in an OsCow object
 
         match dirs::executable_dir() {
             // Checks if there is an executable directory
-            Some(s) => Self::into_os_cow(s), // If there is, return it wrapped in an OsCow object
+            Some(s) => into_os_cow(s), // If there is, return it wrapped in an OsCow object
             #[cfg(windows)]
             _ => match Self::get_microsoft_windows_data_dir() {
                 // If on Windows, check if the Microsoft directory is Some(x).
-                Some(x) => Self::into_os_cow(x.join("WindowsApps")), // If it is, return the path to the WindowsApps directory wrapped in an OsCow object
+                Some(x) => into_os_cow(x.join("WindowsApps")), // If it is, return the path to the WindowsApps directory wrapped in an OsCow object
                 _ => bin_dir(), // Otherwise, return the bin directory wrapped in an OsCow object
             },
             #[cfg(unix)]
             _ => match dirs::home_dir() {
                 // If on Unix, get the path to the home directory
-                Some(x) => Self::into_os_cow(x.join(".local/bin")), // Append ".local/bin" to it and return it wrapped in an OsCow object
+                Some(x) => into_os_cow(x.join(".local/bin")), // Append ".local/bin" to it and return it wrapped in an OsCow object
                 _ => bin_dir(), // If the home directory is unavailable, return the bin directory wrapped in an OsCow object
             },
             #[cfg(not(any(unix, windows)))]
@@ -55,15 +58,15 @@ impl EnvPath {
     pub(crate) fn set_font_dir<'a>() -> OsCow<'a> {
         match dirs::font_dir() {
             // Checks if there is a font directory
-            Some(s) => Self::into_os_cow(s), // If there is, return it wrapped in an OsCow object
+            Some(s) => into_os_cow(s), // If there is, return it wrapped in an OsCow object
             #[cfg(windows)]
             _ => match Self::get_microsoft_windows_data_dir() {
                 // If on Windows, check if the Microsoft directory is available
-                Some(x) => Self::into_os_cow(x.join(r#"Windows\Fonts"#)), // If it is, return the path to the Windows fonts directory wrapped in an OsCow object
-                _ => Self::os_cow(r#"C:\Windows\Fonts"#), // Otherwise, return the path to the Windows fonts directory wrapped in an OsCow object
+                Some(x) => into_os_cow(x.join(r#"Windows\Fonts"#)), // If it is, return the path to the Windows fonts directory wrapped in an OsCow object
+                _ => os_cow::from_str(r#"C:\Windows\Fonts"#), // Otherwise, return the path to the Windows fonts directory wrapped in an OsCow object
             },
             #[cfg(unix)]
-            _ => dirs::data_dir().and_then(|p| Self::into_os_cow(p.join("fonts"))), // If on Unix, get the path to the system data directory and append "fonts" to it, then return it wrapped in an OsCow object
+            _ => dirs::data_dir().and_then(|p| into_os_cow(p.join("fonts"))), // If on Unix, get the path to the system data directory and append "fonts" to it, then return it wrapped in an OsCow object
             #[cfg(not(any(unix, windows)))]
             _ => None, // If not on Unix or Windows, return None
         }
@@ -88,61 +91,6 @@ impl EnvPath {
         }
     }
 
-    /// Returns the path to the temporary directory, either specified by the `TMPDIR` environment variable or the system temporary directory.
-    pub fn get_tmp_dir() -> PathBuf {
-        match env::var_os("TMPDIR") {
-            // Checks if the TMPDIR environment variable is set
-            Some(s) => PathBuf::from(s),
-            None => match env::temp_dir() {
-                p if p
-                    .metadata()
-                    .map_or(true, |x| x.permissions().readonly()) =>
-                {
-                    dirs::cache_dir().map_or_else(
-                        || PathBuf::from_iter([".tmp"]),
-                        |x| x.join("tmp"),
-                    )
-                }
-                p => p,
-            },
-        }
-    }
-
-    /// # OverView
-    ///
-    /// | Property      | Description                                                                                                                                                                                                             |
-    /// | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    /// | Name      | `get_tmp_random_dir`                                                                                                                                                                                                    |
-    /// | Parameters     | <table><tr><td>`prefix`:</td> <td>optional prefix string to add to the random directory name.</td></tr> <tr><td>`rand_length`:</td> <td>optional length for the random portion of the directory name.</td></tr></table> |
-    /// | Return Value  | `PathBuf` type representing file system paths.                                                                                                                                                                          |
-    /// | Functionality | Generates a random temporary directory path.                                                                                                                                                                            |
-    /// | Dependencies  | - `rand` crate for generating random strings. <br> - `PathBuf` type for representing file system paths.                                                                                                                 |
-    /// | Notes         | - The function only works when the "rand" feature is enabled. <br> - If no `rand_length` argument is provided, defaults to 16 characters.                                                                               |
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let dir = envpath::EnvPath::get_tmp_random_dir(None, None);
-    /// // &dir = "/tmp/envpath_Y1NNxaMhchjEAAMn"
-    /// dbg!(&dir);
-    /// ```
-    #[cfg(feature = "rand")]
-    pub fn get_tmp_random_dir(
-        prefix: Option<&str>, // An optional prefix string to add to the random directory name.
-        rand_length: Option<usize>, // An optional length for the random portion of the directory name.
-    ) -> PathBuf {
-        let random = Self::get_random_value(rand_length);
-
-        let join_random = |s| Self::get_tmp_dir().join(s); // Define a closure to join the random String with the temporary directory path.
-
-        match prefix {
-            // Match on the provided prefix.
-            Some(x) if x.trim().is_empty() => join_random(random),
-            Some(x) => join_random(format!("{x}{random}")), // If a prefix is given, append it to the random string.
-            _ => join_random(format!("{}_{random}", Self::PKG_NAME)),
-        }
-    }
-
     ///
     /// |  Name | `set_dir` |
     /// | --- | --- |
@@ -154,9 +102,9 @@ impl EnvPath {
     {
         match () {
             #[cfg(target_os = "android")]
-            () => Self::set_android_dir(_android_dir), // If running on Android, return the Android-specific directory wrapped in an OsCow object
+            () => os_cow::set_android_dir(_android_dir), // If running on Android, return the Android-specific directory wrapped in an OsCow object
             #[allow(unreachable_patterns)]
-            () => p().and_then(Self::into_os_cow), // Otherwise, call the provided function and return its result wrapped in an OsCow object
+            () => p().and_then(into_os_cow), // Otherwise, call the provided function and return its result wrapped in an OsCow object
         }
     }
 
@@ -175,7 +123,7 @@ impl EnvPath {
     /// This is the core function of this module.
     pub(crate) fn match_base_dirs(ident: &str) -> OsCow {
         use dirs::*;
-        let into_cow = |p: Option<PathBuf>| p.and_then(Self::into_os_cow);
+        let into_cow = |p: Option<PathBuf>| p.and_then(into_os_cow);
 
         match ident {
             "music" | "audio" => Self::set_dir(audio_dir, "Music"),
@@ -208,18 +156,20 @@ impl EnvPath {
             "state" => into_cow(state_dir()),
             "template" => into_cow(template_dir()),
             "video" | "movie" => Self::set_dir(video_dir, "Movies"),
-            "tmp" => Self::into_os_cow(Self::get_tmp_dir()),
+            "tmp" => into_os_cow(get_tmp_dir()),
             #[cfg(feature = "rand")]
-            "tmp-rand" | "tmp_random" => {
-                Self::into_os_cow(Self::get_tmp_random_dir(None, None))
-            }
+            "tmp-rand" | "tmp_random" => into_os_cow(get_tmp_random_dir(None, None)),
+            #[cfg(feature = "consts")]
             #[cfg(unix)]
-            "var-tmp" | "var_tmp" => {
-                Self::into_os_cow(Path::new("/var/tmp").join(Self::PKG_NAME))
-            }
-            "temp" | "temporary" => Self::into_os_cow(env::temp_dir()),
+            "var-tmp" | "var_tmp" => into_os_cow(
+                Path::new("/var/tmp").join(crate::consts::get_pkg_name()),
+            ),
+            #[cfg(not(feature = "consts"))]
+            #[cfg(unix)]
+            "var-tmp" | "var_tmp" => into_os_cow(Path::new("/var/tmp")),
+            "temp" | "temporary" => into_os_cow(env::temp_dir()),
             #[cfg(target_os = "android")]
-            "sd" => Self::os_cow(Self::AND_SD),
+            "sd" => os_cow::from_str(os_cow::AND_SD),
             #[cfg(windows)]
             "local-low" | "local_low" => into_cow(data_local_dir().and_then(|p| {
                 p.parent()
@@ -230,49 +180,106 @@ impl EnvPath {
             "cli-cache" | "cli_cache" => into_cow(cache_dir()),
             #[cfg(windows)]
             "progam-files" | "program_files" => Self::into_os_env("ProgramFiles")
-                .or_else(|| Self::os_cow(r#"C:\Program Files"#)),
+                .or_else(|| os_cow::from_str(r#"C:\Program Files"#)),
             #[cfg(windows)]
             "program-files-x86" | "program_files_x86" => {
                 Self::into_os_env("ProgramFiles(x86)")
-                    .or_else(|| Self::os_cow(r#"=C:\Program Files (x86)"#))
+                    .or_else(|| os_cow::from_str(r#"=C:\Program Files (x86)"#))
             }
             #[cfg(windows)]
             "common-program-files" | "common_program_files" => {
                 Self::into_os_env("CommonProgramFiles")
-                    .or_else(|| Self::os_cow(r#"C:\Program Files\Common Files"#))
+                    .or_else(|| os_cow::from_str(r#"C:\Program Files\Common Files"#))
             }
             #[cfg(windows)]
             "common-program-files-x86" | "common_program_files_x86" => {
                 Self::into_os_env("CommonProgramFiles(x86)").or_else(|| {
-                    Self::os_cow(r#"C:\Program Files (x86)\Common Files"#)
+                    os_cow::from_str(r#"C:\Program Files (x86)\Common Files"#)
                 })
             }
             #[cfg(windows)]
             "program-data" | "program_data" => Self::into_os_env("ProgramData")
-                .or_else(|| Self::os_cow(r#"C:\ProgramData"#)),
+                .or_else(|| os_cow::from_str(r#"C:\ProgramData"#)),
             #[cfg(windows)]
             "microsoft" => into_cow(data_dir().map(|x| x.join("Microsoft"))),
-            "empty" => Self::os_cow(""),
+            "empty" => os_cow::from_str(""),
             x if Self::starts_with_remix_expr(x) => Self::parse_remix_expr(x),
             _ => None,
         }
     }
 }
 
+/// Returns the path to the temporary directory, either specified by the `TMPDIR` environment variable or the system temporary directory.
+pub fn get_tmp_dir() -> PathBuf {
+    match env::var_os("TMPDIR") {
+        // Checks if the TMPDIR environment variable is set
+        Some(s) => PathBuf::from(s),
+        None => match env::temp_dir() {
+            p if p
+                .metadata()
+                .map_or(true, |x| x.permissions().readonly()) =>
+            {
+                dirs::cache_dir()
+                    .map_or_else(|| PathBuf::from_iter([".tmp"]), |x| x.join("tmp"))
+            }
+            p => p,
+        },
+    }
+}
+
+/// # OverView
+///
+/// | Property      | Description                                                                                                                                                                                                             |
+/// | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+/// | Name      | `get_tmp_random_dir`                                                                                                                                                                                                    |
+/// | Parameters     | <table><tr><td>`prefix`:</td> <td>optional prefix string to add to the random directory name.</td></tr> <tr><td>`rand_length`:</td> <td>optional length for the random portion of the directory name.</td></tr></table> |
+/// | Return Value  | `PathBuf` type representing file system paths.                                                                                                                                                                          |
+/// | Functionality | Generates a random temporary directory path.                                                                                                                                                                            |
+/// | Dependencies  | - `rand` crate for generating random strings. <br> - `PathBuf` type for representing file system paths.                                                                                                                 |
+/// | Notes         | - The function only works when the "rand" feature is enabled. <br> - If no `rand_length` argument is provided, defaults to 16 characters.                                                                               |
+///
+/// # Examples
+///
+/// ```
+/// let dir = envpath::dirs::get_tmp_random_dir(None, None);
+/// // &dir = "/tmp/envpath_Y1NNxaMhchjEAAMn"
+/// dbg!(&dir);
+/// ```
+#[cfg(feature = "rand")]
+pub fn get_tmp_random_dir(
+    prefix: Option<&str>, // An optional prefix string to add to the random directory name.
+    rand_length: Option<usize>, // An optional length for the random portion of the directory name.
+) -> PathBuf {
+    let random = crate::random::get_random_value(rand_length);
+
+    let join_random = |s| get_tmp_dir().join(s); // Define a closure to join the random String with the temporary directory path.
+
+    match prefix {
+        // Match on the provided prefix.
+        Some(x) if x.trim().is_empty() => join_random(random),
+        Some(x) => join_random(format!("{x}{random}")), // If a prefix is given, append it to the random string.
+        #[cfg(feature = "consts")]
+        _ => join_random(format!("{}_{random}", crate::consts::get_pkg_name())),
+        #[cfg(not(feature = "consts"))]
+        _ => join_random(random),
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::EnvPath;
 
-    #[test]
-    fn strange_dir() {
-        let mut path =
-            EnvPath::from(["$dir: states ?? template ?? video", " $const: pkg  "])
-                .de();
-        dbg!(path.display());
+    // #[test]
+    // fn strange_dir() {
+    //     let mut path =
+    //         EnvPath::from(["$dir: states ?? template ?? video", " $const: pkg  "])
+    //             .de();
+    //     dbg!(path.display());
 
-        path.set_raw(vec![" $dir:  bin ?? first_path  "]);
-        dbg!(path.de().display());
-    }
+    //     path.set_raw(vec![" $dir:  bin ?? first_path  "]);
+    //     dbg!(path.de().display());
+    // }
 
     #[test]
     fn remix_dir() {
@@ -294,7 +301,7 @@ mod tests {
             .map(char::from)
             .collect::<String>();
 
-        let dir = EnvPath::get_tmp_dir().join(random);
+        let dir = get_tmp_dir().join(random);
 
         dbg!(&dir);
     }
@@ -302,7 +309,7 @@ mod tests {
     #[test]
     #[cfg(feature = "rand")]
     fn get_random_tmp_dir() {
-        let dir = EnvPath::get_tmp_random_dir(None, None);
+        let dir = get_tmp_random_dir(None, None);
         // &dir = "/tmp/envpath_Y1NNxaMhchjEAAMn"
         dbg!(&dir);
     }
