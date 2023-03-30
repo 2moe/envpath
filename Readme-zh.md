@@ -465,7 +465,7 @@ rand 用于获取 random(随机) 内容，目前仅支持字符串。
 | tmp        |              | `$tmpdir`:(`/tmp`)                       |
 | tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`            |
 | temp       | temporary    | `env::temp_dir()`                        |
-| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
+| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
@@ -481,6 +481,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
   - 有些平台的 tmp 目录对于普通用户可能是只读的，没错，说的就是你： `/data/local/tmp`
 - temp: 使用 `env::temp_dir()` 获取, 不进行判断
 - tmp-rand: 生成随机的临时目录，需要启用 `rand` 功能
+- `[pkg-name]` 需要启用 `consts` 功能。例如 `var_tmp`，若未启用 `consts`, 则获取到的路径为 `/var/tmp`, 而非 `/var/pkg/[pkg-name]`
 
 #### Android
 
@@ -594,7 +595,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | tmp        |              | `$tmpdir`                           |
 | tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
 | temp       | temporary    | `env::temp_dir()`                   |
-| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
+| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |

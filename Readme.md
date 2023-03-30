@@ -472,6 +472,7 @@ Regarding `tmp` and `temp`:
   - On some platforms, the tmp directory may be read-only for regular users, such as `/data/local/tmp`.
 - `temp`: Use `env::temp_dir()` to obtain the directory path, without performing any checks.
 - `tmp-rand`: Generate a random temporary directory, `rand` feature needs to be enabled.
+- When `[pkg-name]` appears, you also need to enable the `consts` feature.
 
 #### Android
 
@@ -507,7 +508,7 @@ For items not listed, use Linux data.
 | tmp        |              | `$tmpdir`                             |
 | tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`         |
 | temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
-| var_tmp    | var-tmp      |                                       |
+| var-tmp    | var_tmp      |                                       |
 | cli-data   | cli_data     | `$xdg_data_home`                      |
 | cli-cfg    | cli_config   | `$xdg_config_home`                    |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                     |
@@ -585,7 +586,7 @@ For items not listed, use Linux data.
 | tmp        |              | `$tmpdir`                           |
 | tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
 | temp       | temporary    | `env::temp_dir()`                   |
-| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`               |
+| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |
