@@ -6,7 +6,7 @@
 
 A library for **parsing** and **deserialising** paths with special rules.
 
-The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg", "$const: deb-arch"]`
+The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: os", "$val: rand-16"]`
 
 > Maybe I should change it to **deserializing**.  
 > Never mind all the details, let's get started!
@@ -130,7 +130,7 @@ Then add the following content to our `main()` or test function.
 ```rust
 use envpath::EnvPath;
 
-let v = EnvPath::from(["$dir: data", "$const: pkg", "$env: test_qwq", "app"]).de();
+let v = EnvPath::from(["$dir: data", "$env: test_qwq", "app"]).de();
 dbg!(v.display(), v.exists());
 ```
 
@@ -141,7 +141,7 @@ Don't worry, take it step by step.
 It will then output something like the following.
 
 ```js
-[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq/app"
+[src/lib.rs:74] v.display() = "/home/m/.local/share/$env: test_qwq/app"
 [src/lib.rs:74] v.exists() = false
 ```
 
@@ -337,8 +337,6 @@ Use `$const:name` (e.g. `$const:arch`) or `$const:alias` (e.g. `$const:architect
 
 | name          | alias        | From                    | example                 |
 | ------------- | ------------ | ----------------------- | ----------------------- |
-| pkg           | pkg-name     | `CARGO_PKG_NAME`        | envpath                 |
-| ver           | pkg-version  | `CARGO_PKG_VERSION`     | `0.0.1-alpha.1`         |
 | arch          | architecture | `consts::ARCH`          | x86_64, aarch64         |
 | deb-arch      | deb_arch     | `get_deb_arch()`        | amd64, arm64            |
 | os            |              | `consts::OS`            | linux, windows, android |
@@ -456,9 +454,8 @@ Many of these contents are obtained from [dirs](https://docs.rs/dirs/latest/dirs
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
 | tmp        |              | `$tmpdir`:(`/tmp`)                       |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`            |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                       |
 | temp       | temporary    | `env::temp_dir()`                        |
-| var_tmp    | var-tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
@@ -472,7 +469,6 @@ Regarding `tmp` and `temp`:
   - On some platforms, the tmp directory may be read-only for regular users, such as `/data/local/tmp`.
 - `temp`: Use `env::temp_dir()` to obtain the directory path, without performing any checks.
 - `tmp-rand`: Generate a random temporary directory, `rand` feature needs to be enabled.
-- When `[pkg-name]` appears, you also need to enable the `consts` feature.
 
 #### Android
 
@@ -506,9 +502,8 @@ For items not listed, use Linux data.
 | music      | audio        | `$sd/Music`                           |
 | template   |              |                                       |
 | tmp        |              | `$tmpdir`                             |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`         |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                    |
 | temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
-| var-tmp    | var_tmp      |                                       |
 | cli-data   | cli_data     | `$xdg_data_home`                      |
 | cli-cfg    | cli_config   | `$xdg_config_home`                    |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                     |
@@ -544,7 +539,7 @@ For items not listed, use Linux data.
 | music                    | audio                    | `$home\Music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 | tmp                      |                          | `$tmpdir`                                                           |
-| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                       |
+| tmp-rand                 | tmp_random               | `$tmpdir\[random]`                                                  |
 | temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
@@ -584,9 +579,8 @@ For items not listed, use Linux data.
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
 | tmp        |              | `$tmpdir`                           |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                  |
 | temp       | temporary    | `env::temp_dir()`                   |
-| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |

@@ -2,7 +2,7 @@
 
 一个用于 **解析** 和 **反序列化** 具有特殊规则的路径的 library。
 
-格式类似于 `["$proj(com.xy.z): data ? cfg", "$const: pkg", "$const: deb-arch"]`
+格式类似于 `["$proj(com.xy.z): data ? cfg", "$const: os", "$val: rand-16"]`
 
 ## preface
 
@@ -137,7 +137,7 @@ cargo add envpath --no-default-features --features=dirs,consts,project
 ```rust
 use envpath::EnvPath;
 
-let v = EnvPath::from(["$dir: data", "$const: pkg", "$env: test_qwq", "app"]).de();
+let v = EnvPath::from(["$dir: data", "$env: test_qwq", "app"]).de();
 dbg!(v.display(), v.exists());
 ```
 
@@ -147,7 +147,7 @@ dbg!(v.display(), v.exists());
 然后它会输出类似于以下的内容
 
 ```js
-[src/lib.rs:74] v.display() = "/home/m/.local/share/envpath/$env: test_qwq/app"
+[src/lib.rs:74] v.display() = "/home/m/.local/share/$env: test_qwq/app"
 [src/lib.rs:74] v.exists() = false
 ```
 
@@ -343,8 +343,6 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 | name          | alias        | From                    | example                 |
 | ------------- | ------------ | ----------------------- | ----------------------- |
-| pkg           | pkg-name     | `CARGO_PKG_NAME`        | envpath                 |
-| ver           | pkg-version  | `CARGO_PKG_VERSION`     | `0.0.1-alpha.1`         |
 | arch          | architecture | `consts::ARCH`          | x86_64, aarch64         |
 | deb-arch      | deb_arch     | `get_deb_arch()`        | amd64, arm64            |
 | os            |              | `consts::OS`            | linux, windows, android |
@@ -463,9 +461,8 @@ rand 用于获取 random(随机) 内容，目前仅支持字符串。
 | music      | audio        | `$xdg_music_dir`:(`$home/Music`)         |
 | template   |              | `$xdg_templates_dir`:(`$home/Templates`) |
 | tmp        |              | `$tmpdir`:(`/tmp`)                       |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`            |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                       |
 | temp       | temporary    | `env::temp_dir()`                        |
-| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`                    |
 | cli-data   | cli_data     | `$xdg_data_home`                         |
 | cli-cfg    | cli_config   | `$xdg_config_home`                       |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                        |
@@ -481,7 +478,6 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
   - 有些平台的 tmp 目录对于普通用户可能是只读的，没错，说的就是你： `/data/local/tmp`
 - temp: 使用 `env::temp_dir()` 获取, 不进行判断
 - tmp-rand: 生成随机的临时目录，需要启用 `rand` 功能
-- `[pkg-name]` 需要启用 `consts` 功能。例如 `var_tmp`，若未启用 `consts`, 则获取到的路径为 `/var/tmp`, 而非 `/var/pkg/[pkg-name]`
 
 #### Android
 
@@ -515,9 +511,8 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music      | audio        | `$sd/Music`                           |
 | template   |              |                                       |
 | tmp        |              | `$tmpdir`                             |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`         |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                    |
 | temp       | temporary    | `env::temp_dir()`:(`/data/local/tmp`) |
-| var_tmp    | var-tmp      |                                       |
 | cli-data   | cli_data     | `$xdg_data_home`                      |
 | cli-cfg    | cli_config   | `$xdg_config_home`                    |
 | cli-cache  | cli_cache    | `$xdg_cache_home`                     |
@@ -553,7 +548,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music                    | audio                    | `$home\Music`                                                       |
 | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 | tmp                      |                          | `$tmpdir`                                                           |
-| tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                       |
+| tmp-rand                 | tmp_random               | `$tmpdir\[random]`                                                  |
 | temp                     | temporary                | `env::temp_dir()`                                                   |
 | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |
@@ -593,9 +588,8 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | music      | audio        | `$home/music`                       |
 | template   |              | None                                |
 | tmp        |              | `$tmpdir`                           |
-| tmp-rand   | tmp_random   | `$tmpdir/[pkg-name]_[random]`       |
+| tmp-rand   | tmp_random   | `$tmpdir/[random]`                  |
 | temp       | temporary    | `env::temp_dir()`                   |
-| var-tmp    | var_tmp      | `/var/tmp/[pkg-name]`               |
 | cli-data   | cli_data     | `$home/Library/Application Support` |
 | cli-cfg    | cli_config   | `$home/Library/Application Support` |
 | cli-cache  | cli_cache    | `$home/Library/Caches`              |

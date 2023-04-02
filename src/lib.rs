@@ -125,8 +125,6 @@
 //!
 //! | name          | alias        | From                    | example                 |
 //! | ------------- | ------------ | ----------------------- | ----------------------- |
-//! | pkg           | pkg-name     | `CARGO_PKG_NAME`        | envpath                 |
-//! | ver           | pkg-version  | `CARGO_PKG_VERSION`     | `0.0.1-alpha.1`         |
 //! | arch          | architecture | `consts::ARCH`          | x86_64, aarch64         |
 //! | deb-arch      | deb_arch     | `get_deb_arch()`        | amd64, arm64            |
 //! | os            |              | `consts::OS`            | linux, windows, android |
@@ -225,7 +223,7 @@
 //! | music                    | audio                    | `$home\Music`                                                       |
 //! | template                 |                          | `$ms_dir\Windows\Templates`                                         |
 //! | tmp                      |                          | `$tmpdir`                                                           |
-//! | tmp-rand                 | tmp_random               | `$tmpdir\[pkg-name]_[random]`                                        |
+//! | tmp-rand                 | tmp_random               | `$tmpdir\[random]`                                        |
 //! | temp                     | temporary                | `env::temp_dir()`                                                   |
 //! | cli-data                 | cli_data                 | `$home\AppData\Local`                                               |
 //! | cli-cfg                  | cli_config               | `$home\AppData\Local`                                               |

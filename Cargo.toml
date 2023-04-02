@@ -1,6 +1,6 @@
 [package]
 name = "envpath"
-version = "0.0.1-beta.1"
+version = "0.0.1-beta.2"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["Moe <m@tmoe.me>"]
@@ -8,12 +8,13 @@ readme = "Readme.md"
 repository = "https://github.com/2moe/envpath"
 description = """
 A library for parsing and deserialising paths with special rules.
-The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: pkg"]`
+The format is similar to `["$proj(com.xy.z): data ? cfg", "$const: os", "$val: rand-16"]`
 """
 
 [features]
-# default = ["consts", "dirs", "project"]
-default = ["all"]
+default = ["consts", "dirs", "project"]
+# default = ["consts", "dirs", "project", "serde"]
+# default = ["all"]
 dirs = ["dep:dirs"]
 project = ["dep:directories"]
 consts = []

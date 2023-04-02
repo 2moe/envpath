@@ -2,12 +2,7 @@ use crate::{
     os_cow::{self, into_os_cow},
     EnvPath, OsCow,
 };
-use std::{
-    borrow::Cow,
-    env,
-    ops::ControlFlow,
-    path::{Path, PathBuf},
-};
+use std::{borrow::Cow, env, ops::ControlFlow, path::PathBuf};
 impl EnvPath<'_> {
     /// Returns the path to the `Microsoft` directory in the local data folder on Windows, if available.
     ///
@@ -159,14 +154,6 @@ impl EnvPath<'_> {
             "tmp" => into_os_cow(get_tmp_dir()),
             #[cfg(feature = "rand")]
             "tmp-rand" | "tmp_random" => into_os_cow(get_tmp_random_dir(None, None)),
-            #[cfg(feature = "consts")]
-            #[cfg(unix)]
-            "var-tmp" | "var_tmp" => into_os_cow(
-                Path::new("/var/tmp").join(crate::consts::get_pkg_name()),
-            ),
-            #[cfg(not(feature = "consts"))]
-            #[cfg(unix)]
-            "var-tmp" | "var_tmp" => into_os_cow(Path::new("/var/tmp")),
             "temp" | "temporary" => into_os_cow(env::temp_dir()),
             #[cfg(target_os = "android")]
             "sd" => os_cow::from_str(os_cow::AND_SD),
@@ -260,9 +247,6 @@ pub fn get_tmp_random_dir(
         // Match on the provided prefix.
         Some(x) if x.trim().is_empty() => join_random(random),
         Some(x) => join_random(format!("{x}{random}")), // If a prefix is given, append it to the random string.
-        #[cfg(feature = "consts")]
-        _ => join_random(format!("{}_{random}", crate::consts::get_pkg_name())),
-        #[cfg(not(feature = "consts"))]
         _ => join_random(random),
     }
 }

@@ -8,12 +8,18 @@ pub const fn get_architecture() -> &'static str {
     consts::ARCH
 }
 
-pub const fn get_pkg_name() -> &'static str {
-    env!("CARGO_PKG_NAME")
+#[macro_export]
+macro_rules! get_pkg_name {
+    () => {
+        env!("CARGO_PKG_NAME")
+    };
 }
 
-pub const fn get_pkg_version() -> &'static str {
-    env!("CARGO_PKG_VERSION")
+#[macro_export]
+macro_rules! get_pkg_version {
+    () => {
+        env!("CARGO_PKG_VERSION")
+    };
 }
 
 pub const fn get_os_name() -> &'static str {
@@ -33,9 +39,9 @@ impl EnvPath<'_> {
         let as_cow = crate::os_cow::from_str;
 
         match ident {
-            "pkg" | "pkg_name" | "pkg-name" => as_cow(get_pkg_name()),
+            // "pkg" | "pkg_name" | "pkg-name" => as_cow(get_pkg_name!()),
             // "bin" | "bin_name" => as_cow(env!("CARGO_BIN_NAME")),
-            "pkg_version" | "pkg-version" | "ver" => as_cow(get_pkg_version()),
+            // "pkg_version" | "pkg-version" | "ver" => as_cow(get_pkg_version!()),
             "arch" | "architecture" => as_cow(get_architecture()),
             "deb_arch" | "deb-arch" => as_cow(get_deb_arch()),
             "os" => as_cow(get_os_name()),
