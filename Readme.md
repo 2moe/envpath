@@ -371,10 +371,10 @@ For example, if you compile a package for `armv7`, the value obtained by `$const
 
 Use `$val:name` (e.g. `$val: rand-16`) to obtain the values. Unlike `$const:`, most of the values here are obtained at runtime.
 
-| name           | example                  |
-| -------------- | ------------------------ |
-| `rand-[usize]` | `$val: rand-8`: uzI1izWG |
-| empty          | ""                       |
+| name           | expr           | example  |
+| -------------- | -------------- | -------- |
+| `rand-[usize]` | `$val: rand-8` | uzI1izWG |
+| empty          | `$val: empty`  | ""       |
 
 > `$val: rand-[usize]` syntax requires the `rand` feature to be enabled.
 
@@ -382,13 +382,13 @@ rand is used to obtain random content, and currently only supports strings.
 
 ### remix
 
-| expr                        | example                          |
-| --------------------------- | -------------------------------- |
-| `env * [env_name]`          | `env * HOME`                     |
-| `const * [const]`           | `const * arch`                   |
-| `dir * [dir]`               | `dir * download`                 |
-| `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
-| `val * [val]`               | `val * rand-16`                  |
+| syntax                      | expr                            | example                              |
+| --------------------------- | ------------------------------- | ------------------------------------ |
+| `env * [env_name]`          | `env * HOME`                    | `C:\Users\m`                         |
+| `const * [const]`           | `const * arch`                  | `x86_64`                             |
+| `dir * [dir]`               | `dir * dl`                      | `C:\Users\m\Downloads`               |
+| `proj * (project): [ident]` | `proj * (com.xy.z): local-data` | `C:\Users\m\AppData\Local\xy\z\data` |
+| `val * [val]`               | `val * rand-32`                 | 14Y3DAcJnvDtlLjpxCURV0naRvmvuY3H     |
 
 #### example
 

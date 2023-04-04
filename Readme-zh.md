@@ -165,7 +165,7 @@ dbg!(v.display(), v.exists());
 > 技巧：多用空白字符 (空格，换行符，制表符之类的)，以及使用 `?`(下文会介绍)  
 > 比如 `$env: test_qwq` 可以写成 `$env    ：          test-QwQ`  
 > 尽管加了那么多空格， 但如果成功的话，它们会被解析为同一个值。将上面的表达式用 unix 的 posix sh 来描述是： `$TEST_QWQ` (i.e. 所有小写字母全部变为大写，所有 `-` 全部变为 `_`)  
-> 尽管您觉得这种做法可能很难接受，但对于全局系统环境变量来说，这样做是惯例，我并没有创建新的规则。
+> 尽管您觉得这种做法可能很难接受，但对于全局系统环境变量来说，这样做是惯例，我并没有创造新的规则。
 
 既然都解析失败了，那为什么不返回空目录呢?
 
@@ -373,15 +373,17 @@ env 指的是环境变量，`$env: home` 指的是获取 HOME 环境变量的值
 
 ### val
 
-使用 `$val:name` (e.g. `$val: rand-16`) 来获取值。与 `$const:` 不同，大部分 `$val:` 的值都是在运行时获取的，而不是编译时。
+使用 `$val:name` (e.g. `$val: rand-8`) 来获取值。与 `$const:` 不同，大部分 `$val:` 的值都是在运行时获取的，而不是编译时。
 
-| name           | example                           |
-| -------------- | --------------------------------- |
-| `rand-[usize]` | `$val: rand-16`: 90aU0QqYnx1gPEgN |
-| empty          | ""                                |
+| name           | expr            | example          |
+| -------------- | --------------- | ---------------- |
+| `rand-[usize]` | `$val: rand-16` | 90aU0QqYnx1gPEgN |
+| empty          | `$val: empty`   | ""               |
 
 rand 用于获取 random(随机) 内容，目前仅支持字符串。
 
+> rand 需要启用 `rand` feature
+>
 > 碎碎念：咱感觉在写这个功能的时候，有点走火入魔了，写着写着，甚至想要加上时间功能，类似于 `$val: time(rfc-3339, now)`
 >
 > 有时候，功能并非越多越好。  
@@ -389,13 +391,13 @@ rand 用于获取 random(随机) 内容，目前仅支持字符串。
 
 ### remix
 
-| expr                        | example                          |
-| --------------------------- | -------------------------------- |
-| `env * [env_name]`          | `env * HOME`                     |
-| `const * [const]`           | `const * arch`                   |
-| `dir * [dir]`               | `dir * download`                 |
-| `proj * (project): [ident]` | `proj * (com. xy.z): local-data` |
-| `val * [val]`               | `val * rand-16`                  |
+| syntax                      | expr                            | example                              |
+| --------------------------- | ------------------------------- | ------------------------------------ |
+| `env * [env_name]`          | `env * HOME`                    | `C:\Users\m`                         |
+| `const * [const]`           | `const * arch`                  | `x86_64`                             |
+| `dir * [dir]`               | `dir * dl`                      | `C:\Users\m\Downloads`               |
+| `proj * (project): [ident]` | `proj * (com.xy.z): local-data` | `C:\Users\m\AppData\Local\xy\z\data` |
+| `val * [val]`               | `val * rand-32`                 | o9kJjQqYc6lkznAPgaGnnY8dPYVzwawO     |
 
 #### example
 
