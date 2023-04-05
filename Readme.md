@@ -1,5 +1,7 @@
 # EnvPath
 
+[![crates.io](https://img.shields.io/crates/v/envpath.svg)](https://crates.io/crates/envpath)
+
 [![Documentation](https://docs.rs/envpath/badge.svg)](https://docs.rs/envpath)
 
 [![Apache-2 licensed](https://img.shields.io/crates/l/envpath.svg)](./License)
