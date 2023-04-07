@@ -1,6 +1,8 @@
 # all
 /*
 
+target
+
 # whitelist
 !/.git*
 !/src

@@ -575,7 +575,7 @@ first_path 指的是第一个 `$PATH` 变量， last_path 则是最后一个。
 | local-data | local_data   | `$home/Library/Application Support` |
 | local-cfg  | local_config | `$home/Library/Application Support` |
 | desktop    |              | `$home/Desktop`                     |
-| doc        | document     | `$hom/Documents`                    |
+| doc        | document     | `$home/Documents`                   |
 | dl         | download     | `$home/Downloads`                   |
 | bin        | exe          |                                     |
 | first-path | first_path   |                                     |

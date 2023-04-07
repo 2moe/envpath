@@ -67,7 +67,7 @@ pub(crate) fn into_os_cow<'a, I: Into<OsString>>(s: I) -> OsCow<'a> {
 /// ```
 #[cfg(target_os = "android")]
 pub(crate) fn set_android_dir(s: &str) -> OsCow {
-    crate::os_cow::into_os_cow(std::path::Path::new(AND_SD).join(s))
+    into_os_cow(std::path::Path::new(AND_SD).join(s))
 }
 
 #[cfg(test)]
