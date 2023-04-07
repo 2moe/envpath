@@ -1,3 +1,5 @@
+#![cfg_attr(__envpath_doc, feature(doc_auto_cfg, doc_notable_trait))]
+
 /*!
 # envpath
 
