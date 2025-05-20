@@ -1,4 +1,5 @@
-#![cfg_attr(__envpath_doc, feature(doc_auto_cfg, doc_notable_trait))]
+// #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(__unstable_doc, feature(doc_auto_cfg, doc_notable_trait))]
 
 /*!
 # envpath
@@ -6,7 +7,8 @@
 A library for parsing and deserializing paths with special rules.
 
 ## Features:
-- A struct [EnvPath](crate::EnvPath) for representing system paths. `raw` is the special rule path(vector), while `path` is the normal path after parsing. Since `Deref` is implemented, you can use it just like [Path](::std::path::Path) of std.
+
+- A struct [EnvPath] for representing system paths. `raw` is the special rule path(vector), while `path` is the normal path after parsing. Since `Deref` is implemented, you can use it just like [Path](::std::path::Path) of std.
 
 The library also supports optional features for getting common system paths:
 - `consts` - Gets the value of some specific constants built into crate.
@@ -253,11 +255,12 @@ use std::{self, path::PathBuf};
 
 mod deref;
 mod from;
-mod os_cow;
+pub mod os_cow;
 mod os_env;
 mod parser;
 mod raw;
 
+// use compact_str::CompactString as MiniStr;
 pub use os_cow::OsCow;
 pub use raw::EnvPathRaw as Raw;
 
@@ -268,7 +271,7 @@ pub mod consts;
 mod project;
 
 #[cfg(feature = "project")]
-pub use directories::ProjectDirs;
+pub use directories::{self, ProjectDirs};
 
 #[cfg(feature = "dirs")]
 pub mod dirs;
@@ -284,6 +287,6 @@ pub mod random;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, Default)]
 pub struct EnvPath<'r> {
-    pub(crate) raw: Raw<'r>,
-    pub path: Option<PathBuf>,
+  pub(crate) raw: Raw<'r>,
+  pub path: Option<PathBuf>,
 }

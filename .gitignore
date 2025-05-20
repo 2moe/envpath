@@ -1,13 +1,30 @@
-# all
+# black list
 /*
-
 target
+tmp
+tmp.*
+
+.directory
+.thumbnails*
+.DS_Store
+desktop.ini
+Thumbs.db
+Thumbs.db:encryptable
 
 # whitelist
-!/.git*
 !/src
-!/License
+!/build.rs
+!/.rustfmt.toml
+!/rust-toolchain.toml
+!/.cargo
 !/Cargo.toml
-!/locales
+!/Cargo.lock
+!/License
 !/assets
-!/Readme*.md
+!/docs
+!/tests
+!/examples
+!/.git*
+!/locales
+# !/Readme*.md
+# !/crates
